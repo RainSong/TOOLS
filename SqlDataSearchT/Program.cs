@@ -25,41 +25,35 @@ namespace SqlDataSearchT
                                                 WHERE    type = 'u' )
                                                 ORDER BY column_id");
             var sbSql = new StringBuilder();
-            var sbCurrent = new StringBuilder();
             if (tableInfo.Rows.Count > 0)
             {
-                sbCurrent.Clear();
                 foreach (DataRow drT in tableInfo.Rows)
                 {
                     var blFirstCol = true;
                     var tableId = drT["object_id"].ToString();
                     var tableName = drT["name"].ToString();
                     var colRows = columnInfo.Select(string.Format("object_id = {0}", tableId));
-                    sbCurrent.AppendFormat("SELECT * FROM {0} WHERE", tableName);
+                    sbSql.AppendFormat("SELECT * FROM {0} WHERE", tableName);
                     foreach (DataRow drC in colRows)
                     {
                         if (blFirstCol)
                         {
-                            sbCurrent.AppendFormat(" {0} LIKE '%{1}%'", drC["name"], keyWord);
+                            sbSql.AppendFormat(" {0} LIKE '%{1}%'", drC["name"], keyWord);
                             blFirstCol = false;
                         }
-                        sbCurrent.AppendFormat(" OR {0} LIKE '%{1}%'", drC["name"], keyWord);
+                        sbSql.AppendFormat(" OR {0} LIKE '%{1}%'", drC["name"], keyWord);
                     }
-                    sbCurrent.Append(";");
-                    if ((sbSql.Length + sbCurrent.Length) < 3900)
+
+                    FillDataSet(ref ds, sbSql.ToString(), tableName);
+                    sbSql.Clear();
+                    var ds2 = new DataSet();
+                    foreach (DataTable dt in ds.Tables) 
                     {
-                        sbSql.Append(sbCurrent.ToString());
+                        if (dt.Rows.Count > 0) 
+                        {
+                            ds2.Tables.Add(dt.Copy());
+                        }
                     }
-                    else
-                    {
-                        FillDataSet(ref ds, sbSql.ToString());
-                        sbSql.Clear();
-                        sbSql.Append(sbCurrent.ToString());
-                    }
-                }
-                if (sbSql.Length > 0)
-                {
-                    FillDataSet(ref ds, sbSql.ToString());
                 }
             }
 
@@ -92,14 +86,13 @@ namespace SqlDataSearchT
             }
         }
 
-        static void FillDataSet(ref DataSet ds, string sqlCommend)
+        static void FillDataSet(ref DataSet ds, string sqlCommend, string tableName)
         {
             var con = GetConnection(ConnectionString);
             try
             {
                 var adapter = new SqlDataAdapter(sqlCommend, con);
-                ds = new DataSet();
-                adapter.Fill(ds);
+                adapter.Fill(ds, tableName);
             }
             finally
             {
