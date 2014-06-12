@@ -18,6 +18,7 @@ namespace SqlSearch
         {
             InitializeComponent();
             errorMsgs = new List<string>();
+           
         }
 
         private void btnTest_Click(object sender, EventArgs e)
@@ -48,6 +49,7 @@ namespace SqlSearch
             errorMsgs.Clear();
             if (!CheckInput(true)) return;
             var ds = SearhData();
+            ShowResultMulitGrid(ds);
         }
 
         private void CheckServerLogin()
@@ -115,7 +117,6 @@ namespace SqlSearch
                                                 ORDER BY column_id", connectionString);
             return FeachTable(tableInfo, columnInfo, connectionString, keyWord);
         }
-
         private DataSet FeachTable(DataTable tableInfo, DataTable columnInfo, string connectionString, string keyWord)
         {
             DataSet ds = new DataSet();
@@ -148,6 +149,31 @@ namespace SqlSearch
                 }
             }
             return ds;
+        }
+
+        private void ShowResultMulitGrid(DataSet ds)
+        {
+            var height = this.panelMain.Height / (ds.Tables.Count > 0 ? ds.Tables.Count : 1);
+            for (var i = 0; i < ds.Tables.Count;i++ )
+            {
+                var panel = new Panel();
+                panel.Height = height;
+                panel.Dock = DockStyle.Top;
+
+                var grid = new DataGridView();
+                grid.ReadOnly = true;
+                grid.Dock = DockStyle.Fill;
+                grid.DataSource = ds.Tables[i];
+                
+                panel.Controls.Add(grid);
+                this.panelMain.Controls.Add(panel);
+                if (i < ds.Tables.Count - 1)
+                {
+                    var spliter = new Splitter();
+                    spliter.Dock = DockStyle.Top;
+                    this.panelMain.Controls.Add(spliter);
+                }
+            }
         }
 
     }

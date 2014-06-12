@@ -43,6 +43,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtServer = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.panelMain = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -194,17 +195,28 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "服务器";
             // 
+            // panelMain
+            // 
+            this.panelMain.AutoSize = true;
+            this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelMain.Location = new System.Drawing.Point(0, 66);
+            this.panelMain.Name = "panelMain";
+            this.panelMain.Size = new System.Drawing.Size(646, 314);
+            this.panelMain.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(646, 380);
+            this.Controls.Add(this.panelMain);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.Text = "数据库检索";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -225,6 +237,7 @@
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.TextBox txtkeyWord;
+        private System.Windows.Forms.Panel panelMain;
 
     }
 }
