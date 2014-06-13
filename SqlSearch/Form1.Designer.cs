@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.panelTop = new System.Windows.Forms.Panel();
             this.btnSearch = new System.Windows.Forms.Button();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
@@ -44,30 +44,30 @@
             this.txtServer = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panelMain = new System.Windows.Forms.Panel();
-            this.panel1.SuspendLayout();
+            this.panelTop.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
+            // panelTop
             // 
-            this.panel1.Controls.Add(this.btnSearch);
-            this.panel1.Controls.Add(this.radioButton2);
-            this.panel1.Controls.Add(this.radioButton1);
-            this.panel1.Controls.Add(this.txtkeyWord);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.comboBox1);
-            this.panel1.Controls.Add(this.label4);
-            this.panel1.Controls.Add(this.btnTest);
-            this.panel1.Controls.Add(this.txtPwd);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.txtUid);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.txtServer);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(646, 66);
-            this.panel1.TabIndex = 0;
+            this.panelTop.Controls.Add(this.btnSearch);
+            this.panelTop.Controls.Add(this.radioButton2);
+            this.panelTop.Controls.Add(this.radioButton1);
+            this.panelTop.Controls.Add(this.txtkeyWord);
+            this.panelTop.Controls.Add(this.label5);
+            this.panelTop.Controls.Add(this.comboBox1);
+            this.panelTop.Controls.Add(this.label4);
+            this.panelTop.Controls.Add(this.btnTest);
+            this.panelTop.Controls.Add(this.txtPwd);
+            this.panelTop.Controls.Add(this.label3);
+            this.panelTop.Controls.Add(this.txtUid);
+            this.panelTop.Controls.Add(this.label2);
+            this.panelTop.Controls.Add(this.txtServer);
+            this.panelTop.Controls.Add(this.label1);
+            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTop.Location = new System.Drawing.Point(0, 0);
+            this.panelTop.Name = "panelTop";
+            this.panelTop.Size = new System.Drawing.Size(646, 66);
+            this.panelTop.TabIndex = 0;
             // 
             // btnSearch
             // 
@@ -197,9 +197,9 @@
             // 
             // panelMain
             // 
-            this.panelMain.AutoSize = true;
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMain.Location = new System.Drawing.Point(0, 66);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(2, 1, 2, 2);
             this.panelMain.Name = "panelMain";
             this.panelMain.Size = new System.Drawing.Size(646, 314);
             this.panelMain.TabIndex = 1;
@@ -210,19 +210,18 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(646, 380);
             this.Controls.Add(this.panelMain);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panelTop);
             this.Name = "Form1";
             this.Text = "数据库检索";
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.panelTop.ResumeLayout(false);
+            this.panelTop.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panelTop;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label4;

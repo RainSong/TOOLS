@@ -18,7 +18,7 @@ namespace SqlSearch
         {
             InitializeComponent();
             errorMsgs = new List<string>();
-           
+
         }
 
         private void btnTest_Click(object sender, EventArgs e)
@@ -153,26 +153,37 @@ namespace SqlSearch
 
         private void ShowResultMulitGrid(DataSet ds)
         {
-            var height = this.panelMain.Height / (ds.Tables.Count > 0 ? ds.Tables.Count : 1);
-            for (var i = 0; i < ds.Tables.Count;i++ )
+            var tabControl = new TabControl();
+            tabControl.Dock = DockStyle.Fill;
+            this.panelMain.Controls.Add(tabControl);
+            for (var i = 0; i < ds.Tables.Count; i++)
             {
-                var panel = new Panel();
-                panel.Height = height;
-                panel.Dock = DockStyle.Top;
 
                 var grid = new DataGridView();
+                grid.ClearSelection();
+
                 grid.ReadOnly = true;
                 grid.Dock = DockStyle.Fill;
                 grid.DataSource = ds.Tables[i];
-                
-                panel.Controls.Add(grid);
-                this.panelMain.Controls.Add(panel);
-                if (i < ds.Tables.Count - 1)
-                {
-                    var spliter = new Splitter();
-                    spliter.Dock = DockStyle.Top;
-                    this.panelMain.Controls.Add(spliter);
-                }
+                grid.RowHeadersVisible = false;
+                grid.AllowUserToAddRows = false;
+                grid.CellPainting += Grid_CellPainting;
+
+                grid.ClearSelection();
+
+                var tabPage = new System.Windows.Forms.TabPage();
+                tabPage.Text = ds.Tables[i].TableName;
+                tabPage.Controls.Add(grid);
+                tabControl.TabPages.Add(tabPage);
+            }
+        }
+
+        private void Grid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.Value != null &&
+                e.Value.ToString().Contains(this.txtkeyWord.Text.Trim()))
+            {
+                e.CellStyle.ForeColor = System.Drawing.Color.Red;
             }
         }
 
