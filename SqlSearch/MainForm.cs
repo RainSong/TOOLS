@@ -11,10 +11,10 @@ using System.Windows.Forms;
 
 namespace SqlSearch
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private List<string> errorMsgs;
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             errorMsgs = new List<string>();
