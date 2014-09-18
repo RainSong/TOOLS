@@ -30,8 +30,8 @@
         {
             this.panelTop = new System.Windows.Forms.Panel();
             this.btnSearch = new System.Windows.Forms.Button();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.rbObj = new System.Windows.Forms.RadioButton();
+            this.rbData = new System.Windows.Forms.RadioButton();
             this.txtkeyWord = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -50,8 +50,8 @@
             // panelTop
             // 
             this.panelTop.Controls.Add(this.btnSearch);
-            this.panelTop.Controls.Add(this.radioButton2);
-            this.panelTop.Controls.Add(this.radioButton1);
+            this.panelTop.Controls.Add(this.rbObj);
+            this.panelTop.Controls.Add(this.rbData);
             this.panelTop.Controls.Add(this.txtkeyWord);
             this.panelTop.Controls.Add(this.label5);
             this.panelTop.Controls.Add(this.comboBox1);
@@ -79,28 +79,28 @@
             this.btnSearch.UseVisualStyleBackColor = true;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
-            // radioButton2
+            // rbObj
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(469, 38);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(71, 16);
-            this.radioButton2.TabIndex = 12;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "检索对象";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.rbObj.AutoSize = true;
+            this.rbObj.Location = new System.Drawing.Point(469, 38);
+            this.rbObj.Name = "rbObj";
+            this.rbObj.Size = new System.Drawing.Size(71, 16);
+            this.rbObj.TabIndex = 12;
+            this.rbObj.TabStop = true;
+            this.rbObj.Text = "检索对象";
+            this.rbObj.UseVisualStyleBackColor = true;
             // 
-            // radioButton1
+            // rbData
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(391, 37);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(71, 16);
-            this.radioButton1.TabIndex = 11;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "检索数据";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.rbData.AutoSize = true;
+            this.rbData.Checked = true;
+            this.rbData.Location = new System.Drawing.Point(391, 37);
+            this.rbData.Name = "rbData";
+            this.rbData.Size = new System.Drawing.Size(71, 16);
+            this.rbData.TabIndex = 11;
+            this.rbData.TabStop = true;
+            this.rbData.Text = "检索数据";
+            this.rbData.UseVisualStyleBackColor = true;
             // 
             // txtkeyWord
             // 
@@ -233,8 +233,8 @@
         private System.Windows.Forms.TextBox txtServer;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton rbObj;
+        private System.Windows.Forms.RadioButton rbData;
         private System.Windows.Forms.TextBox txtkeyWord;
         private System.Windows.Forms.Panel panelMain;
 
