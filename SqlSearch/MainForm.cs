@@ -20,11 +20,7 @@ namespace SqlSearch
             errorMsgs = new List<string>();
 
         }
-        /// <summary>
-        /// 测试按钮点击时间
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void btnTest_Click(object sender, EventArgs e)
         {
             if (CheckInput())
@@ -47,25 +43,15 @@ namespace SqlSearch
                 }
             }
         }
-        /// <summary>
-        /// 搜索按钮点击事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void btnSearch_Click(object sender, EventArgs e)
         {
             errorMsgs.Clear();
             if (!CheckInput(true)) return;
-            if (rbData.Checked)
-            {
-                var ds = SearhData();
-                ShowResultMulitGrid(ds);
-            }
-            else { }
+            var ds = SearhData();
+            ShowResultMulitGrid(ds);
         }
-        /// <summary>
-        /// 检查连接
-        /// </summary>
+
         private void CheckServerLogin()
         {
             if (string.IsNullOrEmpty(this.txtServer.Text.Trim()))
@@ -81,11 +67,7 @@ namespace SqlSearch
                 errorMsgs.Add("请输入密码！");
             }
         }
-        /// <summary>
-        /// 检查输入
-        /// </summary>
-        /// <param name="checkKeyWord"></param>
-        /// <returns></returns>
+
         private bool CheckInput(bool checkKeyWord = false)
         {
             errorMsgs.Clear();
@@ -108,13 +90,6 @@ namespace SqlSearch
             }
             return true;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sqlCommand"></param>
-        /// <param name="connectionString"></param>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
         private DataTable GetTable(string sqlCommand, string connectionString, string tableName = "")
         {
             var table = new DataTable(tableName);
@@ -124,10 +99,6 @@ namespace SqlSearch
             }
             return table;
         }
-        /// <summary>
-        /// 查询数据表和列信息
-        /// </summary>
-        /// <returns></returns>
         private DataSet SearhData()
         {
             var keyWord = this.txtkeyWord.Text.Trim();
@@ -146,14 +117,6 @@ namespace SqlSearch
                                                 ORDER BY column_id", connectionString);
             return FeachTable(tableInfo, columnInfo, connectionString, keyWord);
         }
-        /// <summary>
-        /// 检索数据库内的数据
-        /// </summary>
-        /// <param name="tableInfo"></param>
-        /// <param name="columnInfo"></param>
-        /// <param name="connectionString"></param>
-        /// <param name="keyWord"></param>
-        /// <returns></returns>
         private DataSet FeachTable(DataTable tableInfo, DataTable columnInfo, string connectionString, string keyWord)
         {
             DataSet ds = new DataSet();
@@ -187,10 +150,7 @@ namespace SqlSearch
             }
             return ds;
         }
-        /// <summary>
-        /// 动态创建控件
-        /// </summary>
-        /// <param name="ds"></param>
+
         private void ShowResultMulitGrid(DataSet ds)
         {
             var tabControl = new TabControl();
@@ -217,11 +177,7 @@ namespace SqlSearch
                 tabControl.TabPages.Add(tabPage);
             }
         }
-        /// <summary>
-        /// 单元格回执事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void Grid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             if (e.Value != null &&
