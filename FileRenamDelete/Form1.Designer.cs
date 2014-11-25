@@ -34,6 +34,7 @@
             this.btnBrower = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.colPath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colExtension = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMD5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBoxDelete = new System.Windows.Forms.GroupBox();
@@ -58,9 +59,13 @@
             this.cbDeleteDir = new System.Windows.Forms.CheckBox();
             this.btnTarBrower = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBoxDelete.SuspendLayout();
             this.groupBoxRename.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -94,38 +99,52 @@
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToResizeRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colPath,
+            this.colSize,
             this.colExtension,
             this.colMD5});
             this.dataGridView1.Location = new System.Drawing.Point(12, 188);
+            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(652, 250);
+            this.dataGridView1.Size = new System.Drawing.Size(652, 230);
             this.dataGridView1.TabIndex = 3;
             // 
             // colPath
             // 
+            this.colPath.DataPropertyName = "Name";
             this.colPath.HeaderText = "路径";
             this.colPath.Name = "colPath";
             this.colPath.ReadOnly = true;
-            this.colPath.Width = 300;
+            this.colPath.Width = 250;
+            // 
+            // colSize
+            // 
+            this.colSize.DataPropertyName = "Size";
+            this.colSize.HeaderText = "大小";
+            this.colSize.Name = "colSize";
+            this.colSize.ReadOnly = true;
             // 
             // colExtension
             // 
+            this.colExtension.DataPropertyName = "Extension";
             this.colExtension.HeaderText = "后缀";
             this.colExtension.Name = "colExtension";
             this.colExtension.ReadOnly = true;
+            this.colExtension.Width = 80;
             // 
             // colMD5
             // 
+            this.colMD5.DataPropertyName = "MD5";
             this.colMD5.HeaderText = "MD5";
             this.colMD5.Name = "colMD5";
             this.colMD5.ReadOnly = true;
-            this.colMD5.Width = 230;
+            this.colMD5.Width = 180;
             // 
             // groupBoxDelete
             // 
@@ -329,11 +348,35 @@
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.toolStripProgressBar1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 430);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(676, 22);
+            this.statusStrip1.TabIndex = 13;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(131, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(200, 16);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(676, 452);
+            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnTarBrower);
             this.Controls.Add(this.cbDeleteDir);
             this.Controls.Add(this.txtTargetPath);
@@ -343,7 +386,6 @@
             this.Controls.Add(this.btnGenMD5);
             this.Controls.Add(this.groupBoxRename);
             this.Controls.Add(this.groupBoxDelete);
-            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btnBrower);
             this.Controls.Add(this.txtPath);
             this.Controls.Add(this.label1);
@@ -357,6 +399,8 @@
             this.groupBoxDelete.PerformLayout();
             this.groupBoxRename.ResumeLayout(false);
             this.groupBoxRename.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -367,7 +411,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnBrower;
-        private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.GroupBox groupBoxDelete;
         private System.Windows.Forms.GroupBox groupBoxRename;
         private System.Windows.Forms.Button btnGenMD5;
@@ -391,8 +434,13 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPath;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colSize;
         private System.Windows.Forms.DataGridViewTextBoxColumn colExtension;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMD5;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
     }
 }
 
