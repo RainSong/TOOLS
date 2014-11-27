@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace FileRenamDelete
 {
@@ -21,9 +22,12 @@ namespace FileRenamDelete
         private List<FilePathInfo> listFilePaths;
         private List<string> listMD5s;
         private long totalFileLength;
-        //private string oldPath;
 
-        #region
+        /// <summary>
+        /// 选择目录按钮点击
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnBrower_Click(object sender, EventArgs e)
         {
             this.folderBrowserDialog1.SelectedPath = string.Empty;
@@ -33,7 +37,11 @@ namespace FileRenamDelete
                 LoadFiles();
             }
         }
-
+        /// <summary>
+        /// 选择目标目录按钮点击
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnTarBrower_Click(object sender, EventArgs e)
         {
             this.folderBrowserDialog1.SelectedPath = string.Empty;
@@ -42,8 +50,11 @@ namespace FileRenamDelete
                 this.txtTargetPath.Text = folderBrowserDialog1.SelectedPath;
             }
         }
-        #endregion
-
+        /// <summary>
+        /// 生成MD5按钮点击
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnGenMD5_Click(object sender, EventArgs e)
         {
             if (this.dataGridView1.RowCount == 0)
@@ -51,9 +62,24 @@ namespace FileRenamDelete
                 MessageBox.Show("没有文件可生成MD5！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            GenMD5();
-        }
 
+            this.toolStripStatusLabel1.Text = "生成文件MD5中";
+
+            this.toolStripProgressBar1.Visible = true;
+
+            Thread thread = new Thread(new ThreadStart(GenMD5));
+            thread.IsBackground = true;
+            thread.Start();
+
+
+
+            //GenMD5();
+        }
+        /// <summary>
+        /// 执行按钮点击
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnExecute_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(this.txtPath.Text))
@@ -62,7 +88,11 @@ namespace FileRenamDelete
                 return;
             }
         }
-
+        /// <summary>
+        /// 路径文本框点击按钮事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtPath_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyValue == 13)
@@ -70,17 +100,26 @@ namespace FileRenamDelete
                 LoadFiles();
             }
         }
-
+        /// <summary>
+        /// 只移动文件复选框选择状态发生改变
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cbOnlyFile_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (this.cbOnlyFile.Checked)
+            {
+                this.cbDeleteDir.Enabled = true;
+            }
+            else
+            {
+                this.cbDeleteDir.Checked = false;
+                this.cbDeleteDir.Enabled = false;
+            }
         }
-
-        private void DGVReload()
-        {
-            this.dataGridView1.DataSource = null;
-        }
-
+        /// <summary>
+        /// 加载文件
+        /// </summary>
         private void LoadFiles()
         {
             if (string.IsNullOrEmpty(this.txtPath.Text))
@@ -103,7 +142,10 @@ namespace FileRenamDelete
             this.toolStripStatusLabel1.Text = "加载完成";
             this.totalFileLength = this.listFilePaths.Sum(o => o.Length);
         }
-
+        /// <summary>
+        /// 递归加载某个目录的文件信息
+        /// </summary>
+        /// <param name="path"></param>
         private void LoadFiles(string path)
         {
             if (Directory.Exists(path))
@@ -136,7 +178,9 @@ namespace FileRenamDelete
                 }
             }
         }
-
+        /// <summary>
+        /// 生成MD5
+        /// </summary>
         private void GenMD5()
         {
             if (listMD5s == null)
@@ -147,21 +191,27 @@ namespace FileRenamDelete
             {
                 listMD5s.Clear();
             }
-            foreach (var fpInfo in listFilePaths)
+            var files = listFilePaths.Where(o => !o.IsPath).ToList();
+            foreach (var file in files)
             {
-                if (fpInfo.IsPath) continue;
-                var md5 = GenMD5(fpInfo.Name);
+                var md5 = GenMD5(file.Name);
+                var message = string.Format("共{0}个文件，正生成第{1}个", files.Count, files.IndexOf(file) + 1);
+                setLableText(this.toolStripStatusLabel1, message);
                 if (listMD5s.All(o => !o.Equals(md5)))
                 {
                     listMD5s.Add(md5);
                 }
-                fpInfo.MD5 = md5;
+                file.MD5 = md5;
             }
             this.cmbDelMD5.DataSource = listMD5s;
 
             this.dataGridView1.DataSource = listFilePaths;
         }
-
+        /// <summary>
+        /// 生成某个文件的MD5
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         private string GenMD5(string fileName)
         {
             FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -205,5 +255,11 @@ namespace FileRenamDelete
             }
             return sb.ToString();
         }
+
+        private Action<ToolStripStatusLabel, string> setLableText = (lab, message) =>
+        {
+            lab.Text = message;
+        };
+
     }
 }
