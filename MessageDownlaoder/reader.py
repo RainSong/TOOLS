@@ -6,19 +6,22 @@ import re
 import urllib
 
 head = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
-baseUrl = 'http://www.meizitu.com/'
+baseUrl = 'http://www.meizitu.com'
 
-def read_child_page(href):
-    print(page)
+def read_child_page(url):
+    print(url)
 
-def read_page(href):
-    page = requests.session().get(href,headers=head)
+def read_page(url):
+    page = requests.session().get(url,headers=head)
     content = page.content
     contentSoup = BeautifulSoup(content,from_encoding='gb18030')
     picture_divs = contentSoup.find_all('div',{'class':'postContent'})
     for picture_div in picture_divs:
-        child_page_url = picture_div.find('a').atttrs['href']
+        child_page_url = picture_div.find('a').attrs['href']
         read_child_page(child_page_url)
     nextUrl = baseUrl + contentSoup.find('a',text='下一页').attrs['href']
     read_page(nextUrl)
-    print(page)
+    print(url)
+
+if __name__=='__main__':
+    read_page(baseUrl)
