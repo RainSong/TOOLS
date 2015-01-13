@@ -1,5 +1,7 @@
 #coding:utf-8
 
+
+
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -16,9 +18,39 @@ def getmd5(str):
     m.update(str)
     return m.hexdigest()
 
-<<<<<<< HEAD
-def downImg(url,url_id):
-    page = requests.session().get(url,headers=head)
+def get_bytes_md5(bytes):
+    m = hashlib.md5()
+    m.update(bytes)
+    return m.hexdigest()
+    
+
+def get_img_urls(content):
+   imgs = content.find('div',{'id':'picture'}).find_all('img')
+   if len(imgs) == 0:
+       return 0
+   else:
+       urls = []
+       for img_node in imgs:
+          urls.append(img_node.attrs['src'])
+       return urls
+
+def save_img_file(bytes):
+    md5 = get_bytes_md5(bytes)
+    img_name = str.format("D:\\imgs\\{0}.jpg",md5)
+    with open(img_name,'wb') as f:
+        f.write(bytes)
+
+def down_imgs(urls):
+    img_byte_arr = []
+    for url in urls:
+        r = requests.session().get(url,stream=True)
+        img_byte_arr.append(r.content)
+        save_img_file(r.content)
+    return img_byte_arr
+
+
+def save_page(url,url_id):
+    page = requests.session().get(url,headers=head,stream=True)
     content = page.content
     #encoding = content.encoding
     contentSoup = BeautifulSoup(content,from_encoding='gb18030')
@@ -32,7 +64,9 @@ def downImg(url,url_id):
     pattern = re.compile(u'[\u4E00-\u9FFF]+')
     tags = pattern.findall(tagStr)
     
-    dbhelper.add_page(url_id,'','',title,description,tags)
+    page_id = dbhelper.add_page(url_id,'','',title,description,tags)
+    img_urls = get_img_urls(contentSoup)
+    bytes_arr = down_imgs(img_urls)
 
 def read_child_page():
     rows = dbhelper.get_top_urls(10)
@@ -43,11 +77,7 @@ def read_child_page():
         ids = ids + str(row[0])
     if  dbhelper.set_url_reading(ids) > 0:
         for row in rows:
-            downImg(row[1],row[0])
-=======
-def read_child_page(url):
-    print(url)
->>>>>>> d8291d8775a88a6b75e9a66b174b2acf263bb144
+            save_page(row[1],row[0])
 
 def read_page(url):
     page = requests.session().get(url,headers=head)
@@ -58,11 +88,6 @@ def read_page(url):
     for picture_div in picture_divs:
         child_page_url = picture_div.find('a').attrs['href']
         cheildUrls.append([child_page_url,getmd5(child_page_url)])
-<<<<<<< HEAD
-    
-=======
-        #read_child_page(child_page_url)
->>>>>>> d8291d8775a88a6b75e9a66b174b2acf263bb144
     dbhelper.add_url(cheildUrls)
     nextUrl = contentSoup.find('a',text = '下一页').attrs['href']
     if nextUrl.startswith('/a'):
@@ -74,9 +99,5 @@ def read_page(url):
    
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     #read_page(baseUrl)
-    read_child_page()
-=======
-    read_page(baseUrl)
->>>>>>> d8291d8775a88a6b75e9a66b174b2acf263bb144
+     read_child_page()

@@ -5,12 +5,7 @@ import logging
 
 dbPath = os.getcwd() + '\\Data\\2014.db'
 
-<<<<<<< HEAD
 logPath = os.getcwd() + '\\Logs\\' + time.strftime('%Y-%m-%d',time.localtime(time.time())) + '.log'
-
-#logging.basicConfig(filename=logPath)
-=======
->>>>>>> d8291d8775a88a6b75e9a66b174b2acf263bb144
 def exists_url(md5):
     conn = sqlite3.connect(dbPath,1000)
     sql = "select count(1) from urls where md5 = '{0}'".format(md5)
@@ -26,19 +21,12 @@ def add_url(urls):
    print('connnect db success')
    sql = ''
    for url in urls:
-<<<<<<< HEAD
-=======
-       #addTime = time.time()
-       #addTime = time.localtime(addTime)
-       #addTime = time.strftime('%Y-%m-%d %H:%M:%S',addTime)
->>>>>>> d8291d8775a88a6b75e9a66b174b2acf263bb144
        if exists_url(url[1]) == False:
            sql = sql + "insert into urls(url,md5) values('{0}','{1}');\n".format(url[0],url[1])
    print(sql)
    conn.executescript(sql)
    conn.commit()
    conn.close()
-<<<<<<< HEAD
 
 def get_top_urls(top_num):
     sql = 'select  id,url from urls where is_readed in (0,1) order by add_time desc limit 0,{0}'.format(top_num)
@@ -81,7 +69,7 @@ def add_page(url_id,encoding,content,title,description,tags):
     conn = sqlite3.connect(dbPath,timeout=1000)
     cur = conn.cursor()
     try:
-        cur.execute(sql)
+        cur.execute(exists_page_saq)
         row = cur.fetchone()
         if cur.rowcount < 0:
             cur.execute(sql)
@@ -99,5 +87,3 @@ def add_page(url_id,encoding,content,title,description,tags):
     finally:
         conn.close()
     return page_id
-=======
->>>>>>> d8291d8775a88a6b75e9a66b174b2acf263bb144
