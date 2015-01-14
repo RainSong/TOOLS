@@ -1,7 +1,7 @@
 #coding:utf-8
 
 
-
+import os
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -34,23 +34,29 @@ def get_img_urls(content):
           urls.append(img_node.attrs['src'])
        return urls
 
-def save_img_file(bytes):
-    md5 = get_bytes_md5(bytes)
-    img_name = str.format("D:\\imgs\\{0}.jpg",md5)
+def save_img_file(bytes,url_md5):
+    img_md5 = get_bytes_md5(bytes)
+    path = str.format("D:\\imgs\\{0}",url_md5)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    img_name = str.format("{0}\\{1}.jpg",path,img_md5)
     with open(img_name,'wb') as f:
         f.write(bytes)
 
-def down_imgs(urls):
-    img_byte_arr = []
+def down_imgs(urls,url_md5):
+    img_arr = []
     for url in urls:
         r = requests.session().get(url,stream=True)
-        img_byte_arr.append(r.content)
-        save_img_file(r.content)
-    return img_byte_arr
+        #img_byte_arr.append(r.content)
+        save_img_file(r.content,url_md5)
+        md5 = get_bytes_md5(r.content)
+        arr = [md5,url,r.content]
+        img_arr.append(arr)
+    return img_arr
 
 
-def save_page(url,url_id):
-    page = requests.session().get(url,headers=head,stream=True)
+def save_page(url_id,url,url_md5):
+    page = requests.session().get(url,headers=head)
     content = page.content
     #encoding = content.encoding
     contentSoup = BeautifulSoup(content,from_encoding='gb18030')
@@ -66,7 +72,9 @@ def save_page(url,url_id):
     
     page_id = dbhelper.add_page(url_id,'','',title,description,tags)
     img_urls = get_img_urls(contentSoup)
-    bytes_arr = down_imgs(img_urls)
+    img_arr = down_imgs(img_urls,url_md5)
+    dbhelper.save_page_image(img_arr,page_id)
+    dbhelper.set_url_readed(url_id)
 
 def read_child_page():
     rows = dbhelper.get_top_urls(10)
@@ -77,27 +85,39 @@ def read_child_page():
         ids = ids + str(row[0])
     if  dbhelper.set_url_reading(ids) > 0:
         for row in rows:
-            save_page(row[1],row[0])
+            save_page(row[0],row[1],row[2])
 
-def read_page(url):
-    page = requests.session().get(url,headers=head)
-    content = page.content
-    contentSoup = BeautifulSoup(content,from_encoding='gb18030')
-    picture_divs = contentSoup.find_all('div',{'class':'postContent'})
-    cheildUrls = []
-    for picture_div in picture_divs:
-        child_page_url = picture_div.find('a').attrs['href']
-        cheildUrls.append([child_page_url,getmd5(child_page_url)])
-    dbhelper.add_url(cheildUrls)
-    nextUrl = contentSoup.find('a',text = '下一页').attrs['href']
-    if nextUrl.startswith('/a'):
-        nextUrl = baseUrl + nextUrl
-    else:
-        nextUrl = baseUrl + '/a/' + nextUrl
-    read_page(nextUrl)
-    print(url)
-   
-
+def read_page():
+    failed_times = 0
+    index = 0
+    while failed_times < 10:
+        index = index + 1
+        url = str.format('http://www.meizitu.com/a/list_1_{0}.html',index)
+        print(str.format('读取页面：{0}',url))
+        response = requests.session().get(url,headers=head)
+        if response.status_code != 200 or len(response.content) < 1000:
+            failed_times = failed_times + 1
+            continue
+        else:
+            failed_times = 0
+        content = response.content
+        contentSoup = BeautifulSoup(content,from_encoding='gb18030')
+        picture_divs = contentSoup.find_all('div',{'class':'postContent'})
+        childUrls = []
+        for picture_div in picture_divs:
+            child_page_url = picture_div.find('a').attrs['href']
+            childUrls.append([child_page_url,getmd5(child_page_url)])
+            print('####保存URL：' + child_page_url)
+        dbhelper.add_url(childUrls)
+        print("\r\r")
+        #nextlink = contentSoup.find('a',text = '下一页')
+        #if nextlink != None:
+        #    nextUrl = nextlink.attrs['href']
+        #    if nextUrl.startswith('/a'):
+        #        nextUrl = baseUrl + nextUrl
+        #    else:
+        #        nextUrl = baseUrl + '/a/' + nextUrl
 if __name__ == '__main__':
-    #read_page(baseUrl)
-     read_child_page()
+    read_page()
+    print('页面路径读取完成！')
+    #read_child_page()
