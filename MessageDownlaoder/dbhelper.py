@@ -3,9 +3,10 @@ import time
 import sqlite3
 import logging
 
-dbPath = os.getcwd() + '\\Data\\2014.db'
+dbPath = os.path.split(os.path.realpath(__file__))[0] + '\\Data\\2014.db'
 
-logPath = os.getcwd() + '\\Logs\\' + time.strftime('%Y-%m-%d',time.localtime(time.time())) + '.log'
+logPath = os.path.split(os.path.realpath(__file__))[0] + '\\Logs\\' + time.strftime('%Y-%m-%d',time.localtime(time.time())) + '.log'
+
 
 def get_time_now():
     time_now = time.time()
@@ -13,22 +14,20 @@ def get_time_now():
     str_time_now = time.strftime('%Y-%m-%d %H:%M:%S',time_now)
     return str_time_now
 
-def exists_url(md5):
-    conn = sqlite3.connect(dbPath,1000)
+def exists_url(md5,cur):
     sql = "select count(1) from url where md5 = '{0}'".format(md5)
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    dr = cursor.fetchone()
-    conn.close()
-    return dr[0] > 0
+    cur.execute(sql)
+    row = cur.fetchone()
+    return row[0] > 0
 
 def add_url(urls):
    conn = sqlite3.connect(dbPath,timeout=1000)
+   cur = conn.cursor()
    sql = ''
    for url in urls:
-       if exists_url(url[1]) == False:
-           sql = sql + "insert into url(url,md5,add_time) values('{0}','{1}','{2}');\n".format(url[0],url[1],get_time_now())
-   conn.executescript(sql)
+       if exists_url(url[1],cur) == False:
+           sql = sql + "insert into url(url,md5,add_time,is_readed) values('{0}','{1}','{2}',0);\n".format(url[0],url[1],get_time_now())
+   cur.executescript(sql)
    conn.commit()
    conn.close()
 
@@ -59,6 +58,14 @@ def set_url_readed(url_id):
     conn.close()
     return cur.rowcount
 
+def set_url_readerror(url_id):
+    sql = 'update url set is_readed = 4 where id = {0}'.format(url_id)
+    conn = sqlite3.connect(dbPath,timeout=1000)
+    cur = conn.cursor()
+    cur.execute(sql)
+    conn.commit()
+    conn.close()
+    return cur.rowcount
 def save_img(md5,url,content,page_id,cur):
     exists_img_sql = "select id from file_info where md5 = '{0}'".format(md5)
     insert_img_sql = "insert into file_info(md5,extension,content,size,url,add_time) values ('{0}','jpg','{1}',{2},'{3}','{4}')".format(md5,sqlite3.Binary(content),len(content),url,get_time_now())
@@ -104,9 +111,9 @@ def add_page(url_id,encoding,content,title,description,tags):
     sql = "insert into page_info (url_id,encoding,content,title,description,add_time) values ({0},'{1}','{2}','{3}','{4}','{5}')".format(url_id,encoding,content,title,description,get_time_now())
     conn = sqlite3.connect(dbPath,timeout=1000)
     cur = conn.cursor()
+    page_id = 0
     try:
         cur.execute(exists_page_saq)
-        row = cur.fetchone()
         if cur.rowcount < 0:
             cur.execute(sql)
             cur.execute("select last_insert_rowid()")
