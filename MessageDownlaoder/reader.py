@@ -96,6 +96,7 @@ def save_page(url_id,url,url_md5):
             print('\r####设置URL{0}为已读状态\r'.format(url))
             dbhelper.set_url_readed(url_id)
         else:
+            print('\r####页面{0}下载失败'.format(url))
             dbhelper.set_url_readerror(url_id)
     except Exception as e:
         print('\r####页面{0}下载失败'.format(url))

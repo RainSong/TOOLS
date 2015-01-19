@@ -3,7 +3,7 @@ import time
 import sqlite3
 import logging
 
-dbPath = os.path.split(os.path.realpath(__file__))[0] + '\\Data\\2014.db'
+dbPath = os.path.split(os.path.realpath(__file__))[0] + '\\Data\\meizitu.db'
 
 logPath = os.path.split(os.path.realpath(__file__))[0] + '\\Logs\\' + time.strftime('%Y-%m-%d',time.localtime(time.time())) + '.log'
 
@@ -18,7 +18,7 @@ def exists_url(md5,cur):
     sql = "select count(1) from url where md5 = '{0}'".format(md5)
     cur.execute(sql)
     row = cur.fetchone()
-    return row[0] > 0
+    return row != None and row[0] > 0
 
 def add_url(urls):
    conn = sqlite3.connect(dbPath,timeout=1000)
@@ -68,15 +68,15 @@ def set_url_readerror(url_id):
     return cur.rowcount
 def save_img(md5,url,content,page_id,cur):
     exists_img_sql = "select id from file_info where md5 = '{0}'".format(md5)
-    insert_img_sql = "insert into file_info(md5,extension,content,size,url,add_time) values ('{0}','jpg','{1}',{2},'{3}','{4}')".format(md5,sqlite3.Binary(content),len(content),url,get_time_now())
+    insert_img_sql = "insert into file_info(md5,extension,content,size,url,add_time) values (?,'jpg',?,?,?,?)"
     cur.execute(exists_img_sql)
-    if cur.rowcount < 0:
-        cur.execute(insert_img_sql)
+    row = cur.fetchone()
+    if row == None:
+        cur.execute(insert_img_sql,[md5,sqlite3.Binary(content),len(content),url,get_time_now()])
         cur.execute("select last_insert_rowid()")
         row = cur.fetchone()
         return row[0]
     else:
-        row = cur.fetchone()
         return row[0]
 
 def save_page_image(img_arr,page_id):
@@ -90,19 +90,19 @@ def save_page_image(img_arr,page_id):
     return 0
 
 def add_tag(page_id,tags,cur):
-    exists_tag_sql = "select id from tag where tag = '{0}' limit 0,1"
-    insert_tag_sql = "insert into tag(tag,add_time) values('{0}')"
-    insert_page_tag_sql = "insert into page_tag(page_id,tag_id,add_time) values({0},{1})"
+    exists_tag_sql = "select id from tag where tag = '{0}'"
+    insert_tag_sql = "insert into tag(tag,add_time) values('{0}','{1}')"
+    insert_page_tag_sql = "insert into page_tag(page_id,tag_id,add_time) values({0},{1},'{2}')"
     tag_id = 0
     for tag in tags:
         cur.execute(exists_tag_sql.format(tag))
-        if cur.rowcount < 0:
+        row = cur.fetchone()
+        if row == None:
            cur.execute(insert_tag_sql.format(tag,get_time_now()))
            cur.execute("select last_insert_rowid()")
            row = cur.fetchone()
            tag_id = row[0]
         else:
-            row = cur.fetchone()
             tag_id = row[0]
         cur.execute(insert_page_tag_sql.format(page_id,tag_id,get_time_now()))
 
@@ -114,19 +114,20 @@ def add_page(url_id,encoding,content,title,description,tags):
     page_id = 0
     try:
         cur.execute(exists_page_saq)
-        if cur.rowcount < 0:
+        row = cur.fetchone()
+        if row == None:
             cur.execute(sql)
             cur.execute("select last_insert_rowid()")
             row = cur.fetchone()
             page_id = row[0]
             add_tag(page_id,tags,cur)
         else:
-            conn.close()
             return  row[0]
         conn.commit()
     except sqlite3.Error as e:
         print(e)
         conn.rollback()
+        page_id = 0
     finally:
         conn.close()
     return page_id
