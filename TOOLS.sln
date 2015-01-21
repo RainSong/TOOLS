@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileRenamDelete", "FileRena
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "MessageDownlaoder", "MessageDownlaoder\MessageDownlaoder.pyproj", "{7FCE950A-04E8-48D5-869E-53437574D8A4}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "MyReader", "MyReader\MyReader.pyproj", "{0D2DE7A8-541D-4A94-8725-4D123A77A090}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{ECB6FAB1-9A80-4047-BD75-9B76986DB000}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7FCE950A-04E8-48D5-869E-53437574D8A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7FCE950A-04E8-48D5-869E-53437574D8A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D2DE7A8-541D-4A94-8725-4D123A77A090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D2DE7A8-541D-4A94-8725-4D123A77A090}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D2DE7A8-541D-4A94-8725-4D123A77A090}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D2DE7A8-541D-4A94-8725-4D123A77A090}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
