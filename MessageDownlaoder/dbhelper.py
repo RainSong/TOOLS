@@ -1,9 +1,11 @@
+#coding:utf-8
+
 import os
 import time
 import sqlite3
 import logging
 
-dbPath = os.path.split(os.path.realpath(__file__))[0] + '\\Data\\meizitu.db'
+dbPath = os.path.split(os.path.realpath(__file__))[0] + '\\Data\\meizitu2015.db'
 
 logPath = os.path.split(os.path.realpath(__file__))[0] + '\\Logs\\' + time.strftime('%Y-%m-%d',time.localtime(time.time())) + '.log'
 
@@ -93,6 +95,7 @@ def add_tag(page_id,tags,cur):
     exists_tag_sql = "select id from tag where tag = '{0}'"
     insert_tag_sql = "insert into tag(tag,add_time) values('{0}','{1}')"
     insert_page_tag_sql = "insert into page_tag(page_id,tag_id,add_time) values({0},{1},'{2}')"
+    update_citations_sql = "update tag set citations = citations + 1 where id = {0}"
     tag_id = 0
     for tag in tags:
         cur.execute(exists_tag_sql.format(tag))
@@ -104,6 +107,7 @@ def add_tag(page_id,tags,cur):
            tag_id = row[0]
         else:
             tag_id = row[0]
+            cur.execute(update_citations_sql.format(tag_id))
         cur.execute(insert_page_tag_sql.format(page_id,tag_id,get_time_now()))
 
 def add_page(url_id,encoding,content,title,description,tags):
