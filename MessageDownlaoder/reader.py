@@ -9,9 +9,11 @@ import urllib
 import dbhelper
 import hashlib
 import threading
+import time
 
 head = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
 baseUrl = 'http://www.meizitu.com'
+down_thread_number = 20
 
 def getmd5(str):
     str = str.encode()
@@ -23,7 +25,6 @@ def get_bytes_md5(bytes):
     m = hashlib.md5()
     m.update(bytes)
     return m.hexdigest()
-    
 
 def get_img_urls(content):
    imgbox = content.find('div',{'id':'picture'})
@@ -59,7 +60,6 @@ def down_imgs(urls,url_md5):
         arr = [md5,url,r.content]
         img_arr.append(arr)
     return img_arr
-
 
 def save_page(url_id,url,url_md5):
     print('\r\r####读取页面{0}中的图片URL'.format(url))
@@ -154,13 +154,7 @@ def read_page():
         except:
             print('\r读取页面{0}时发生错误！'.format(url))
     print('\r页面路径读取完成！')
-        #nextlink = contentSoup.find('a',text = '下一页')
-        #if nextlink != None:
-        #    nextUrl = nextlink.attrs['href']
-        #    if nextUrl.startswith('/a'):
-        #        nextUrl = baseUrl + nextUrl
-        #    else:
-        #        nextUrl = baseUrl + '/a/' + nextUrl
+
 if __name__ == '__main__':
     read_all = False
     while True:
@@ -179,5 +173,11 @@ if __name__ == '__main__':
     if read_all:
         t1 = threading.Thread(target=read_page)
         t1.start()
-    t2 = threading.Thread(target=read_child_page)
-    t2.start()
+
+    dbhelper.update_noreaded()
+
+    for i in range(0,down_thread_number):
+        t2 = threading.Thread(target=read_child_page)
+        t2.start()
+        time.sleep(5)
+        

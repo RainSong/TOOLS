@@ -34,7 +34,7 @@ def add_url(urls):
    conn.close()
 
 def get_top_urls(top_num):
-    sql = 'select  id,url,md5 from url where is_readed in (0,1) order by add_time desc limit 0,{0}'.format(top_num)
+    sql = 'select  id,url,md5 from url where is_readed in (0) order by add_time desc limit 0,{0}'.format(top_num)
     conn = sqlite3.connect(dbPath,timeout=1000)
     cur = conn.cursor()
     cur.execute(sql)
@@ -135,3 +135,10 @@ def add_page(url_id,encoding,content,title,description,tags):
     finally:
         conn.close()
     return page_id
+
+def update_noreaded():
+    sql = 'update url set is_readed = 0 where is_readed = 1'
+    conn = sqlite3.connect(dbPath,timeout=1000)
+    conn.execute(sql)
+    conn.commit()
+    conn.close()
