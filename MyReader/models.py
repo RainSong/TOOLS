@@ -1,5 +1,3 @@
-#coding:utf-8
-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String,DateTime
 import datetime
@@ -40,7 +38,7 @@ class page_info(base):
     content = Column(String)
     title = Column(String)
     description = Column(String)
-    add_time = Column(datetime,default=datetime.datetime.now())
+    add_time = Column(DateTime,default=datetime.datetime.now())
     is_readed = Column(Integer,default=0)
 
 class page_file(base):
@@ -49,7 +47,7 @@ class page_file(base):
     id = Column(Integer,primary_key=True)
     page_id = Column(Integer)
     file_id = Column(Integer)
-    add_time = Column(datetime,default=datetime.datetime.now())
+    add_time = Column(DateTime,default=datetime.datetime.now())
 
 class file_info(base):
     __tablename__= "file_info"
@@ -60,4 +58,4 @@ class file_info(base):
     content = Column(String)
     size = Column(Integer)
     url = Column(String)
-    add_time = Column(datetime,default=datetime.datetime.now())
+    add_time = Column(DateTime,default=datetime.datetime.now())

@@ -1,5 +1,3 @@
-#coding:utf-8
-
 """
 Routes and views for the flask application.
 """
@@ -7,22 +5,25 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import render_template
 from MyReader import app
+import datahelper
 
 @app.route('/')
 @app.route('/home')
 def home():
     """Renders the home page."""
     return render_template(
-        'index.jade',
+        'index.html',
         title='Home Page',
         year=datetime.now().year,
+        tags=datahelper.getTags(),
+        pages=[]#datahelper.getPags()
     )
 
 @app.route('/contact')
 def contact():
     """Renders the contact page."""
     return render_template(
-        'contact.jade',
+        'contact.html',
         title='Contact',
         year=datetime.now().year,
         message='Your contact page.'
@@ -32,7 +33,7 @@ def contact():
 def about():
     """Renders the about page."""
     return render_template(
-        'about.jade',
+        'about.html',
         title='About',
         year=datetime.now().year,
         message='Your application description page.'
