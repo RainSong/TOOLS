@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Routes and views for the flask application.
 """
@@ -6,6 +8,9 @@ from datetime import datetime
 from flask import render_template
 from MyReader import app
 import datahelper
+import sys
+
+#sys.setdefaultencoding('utf-8')
 
 @app.route('/')
 @app.route('/home')
