@@ -13,7 +13,7 @@ import time
 
 head = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
 baseUrl = 'http://www.meizitu.com'
-down_thread_number = 5
+down_thread_number = 20
 
 def getmd5(str):
     str = str.encode()
@@ -49,15 +49,16 @@ def save_img_file(bytes,url_md5):
     img_name = str.format("{0}\\{1}.jpg",path,img_md5)
     with open(img_name,'wb') as f:
         f.write(bytes)
+    return img_name
 
 def down_imgs(urls,url_md5):
     img_arr = []
     for url in urls:
         print('\r########下载URL为{0}的图片'.format(url))
         r = requests.session().get(url,stream=True)
-        save_img_file(r.content,url_md5)
+        img_name = save_img_file(r.content,url_md5)
         md5 = get_bytes_md5(r.content)
-        arr = [md5,url,r.content]
+        arr = [md5,url,img_name]
         img_arr.append(arr)
     return img_arr
 

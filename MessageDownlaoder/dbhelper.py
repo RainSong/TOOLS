@@ -1,12 +1,13 @@
 #coding:utf-8
 
-import os
-import time
-import sqlite3
 import logging
+import os
+import sqlite3
+import time
 
-dbPath = os.path.split(os.path.realpath(__file__))[0] + '\\Data\\meizitu2015.db'
 
+dbPath = os.path.split(os.path.realpath(__file__))[0] + '\\Data\\meizitu2015.sqlite'
+print(dbPath)
 logPath = os.path.split(os.path.realpath(__file__))[0] + '\\Logs\\' + time.strftime('%Y-%m-%d',time.localtime(time.time())) + '.log'
 
 
@@ -68,13 +69,13 @@ def set_url_readerror(url_id):
     conn.commit()
     conn.close()
     return cur.rowcount
-def save_img(md5,url,content,page_id,cur):
+def save_file(md5,url,path,cur):
     exists_img_sql = "select id from file_info where md5 = '{0}'".format(md5)
-    insert_img_sql = "insert into file_info(md5,extension,content,size,url,add_time) values (?,'jpg',?,?,?,?)"
+    insert_img_sql = "insert into file_info(md5,extension,url,path) values (?,'',?,?)"
     cur.execute(exists_img_sql)
     row = cur.fetchone()
     if row == None:
-        cur.execute(insert_img_sql,[md5,sqlite3.Binary(content),len(content),url,get_time_now()])
+        cur.execute(insert_img_sql,[md5,url,path])
         cur.execute("select last_insert_rowid()")
         row = cur.fetchone()
         return row[0]
@@ -85,7 +86,7 @@ def save_page_image(img_arr,page_id):
     conn = sqlite3.connect(dbPath,timeout=1000)
     cur = conn.cursor()
     for img_info in img_arr:
-       img_id = save_img(img_info[0],img_info[1],img_info[2],page_id,cur)
+       img_id = save_img(img_info[0],img_info[1],img_info[2],cur)
        sql = "insert into page_file(page_id,file_id,add_time) values({0},{1},'{2}')".format(page_id,img_id,get_time_now())
        cur.execute(sql)
        conn.commit()
