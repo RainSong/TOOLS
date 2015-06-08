@@ -107,13 +107,15 @@ namespace SqlSearch
                     this.txtUid.Text.Trim(),
                     this.txtPwd.Text.Trim());
             var tableInfo = GetTable("SELECT name,object_id FROM sys.objects WHERE type = 'U' ORDER BY object_id;", connectionString);
-            var columnInfo = GetTable(@"SELECT  object_id ,
-                                                column_id ,
-                                                name
-                                                FROM    sys.columns
-                                                WHERE   object_id IN ( SELECT   object_id
-                                                FROM     sys.objects
-                                                WHERE    type = 'u' )
+            var columnInfo = GetTable(@"select c.object_id ,
+                                                c.column_id ,
+                                                c.name,
+                                                t.name as table_name,
+                                                ty.name as [type_name] from sys.columns as c
+                                                left join sys.objects as t on c.object_id = t.object_id
+                                                left join sys.types as ty on c.system_type_id = ty.system_type_id
+                                                WHERE    type = 'u'
+                                                and ty.name not in ('varbinary','binary','image')
                                                 ORDER BY column_id", connectionString);
             return FeachTable(tableInfo, columnInfo, connectionString, keyWord);
         }
@@ -134,10 +136,10 @@ namespace SqlSearch
                     {
                         if (blFirstCol)
                         {
-                            sbSql.AppendFormat(" {0} LIKE '%{1}%'", drC["name"], keyWord);
+                            sbSql.AppendFormat(" cast([{0}] as varchar(max)) LIKE '%{1}%'", drC["name"], keyWord);
                             blFirstCol = false;
                         }
-                        sbSql.AppendFormat(" OR {0} LIKE '%{1}%'", drC["name"], keyWord);
+                        sbSql.AppendFormat(" OR cast([{0}] as varchar(max)) LIKE '%{1}%'", drC["name"], keyWord);
                     }
 
                     var table = GetTable(sbSql.ToString(), connectionString, tableName);

@@ -153,6 +153,7 @@
             this.txtPwd.PasswordChar = '*';
             this.txtPwd.Size = new System.Drawing.Size(120, 21);
             this.txtPwd.TabIndex = 5;
+            this.txtPwd.Text = "xhm@ygj";
             // 
             // label3
             // 
@@ -169,6 +170,7 @@
             this.txtUid.Name = "txtUid";
             this.txtUid.Size = new System.Drawing.Size(120, 21);
             this.txtUid.TabIndex = 3;
+            this.txtUid.Text = "sa";
             // 
             // label2
             // 
@@ -185,6 +187,7 @@
             this.txtServer.Name = "txtServer";
             this.txtServer.Size = new System.Drawing.Size(120, 21);
             this.txtServer.TabIndex = 1;
+            this.txtServer.Text = ".";
             // 
             // label1
             // 
@@ -204,14 +207,14 @@
             this.panelMain.Size = new System.Drawing.Size(646, 314);
             this.panelMain.TabIndex = 1;
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(646, 380);
             this.Controls.Add(this.panelMain);
             this.Controls.Add(this.panelTop);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "数据库检索";
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
