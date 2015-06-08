@@ -7,9 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlSearch", "SqlSearch\SqlS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileRenamDelete", "FileRenamDelete\FileRenamDelete.csproj", "{ECB6FAB1-9A80-4047-BD75-9B76986DB000}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "MessageDownlaoder", "MessageDownlaoder\MessageDownlaoder.pyproj", "{7FCE950A-04E8-48D5-869E-53437574D8A4}"
-EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "MyReader", "MyReader\MyReader.pyproj", "{1EF47002-BC6E-47FE-A690-941FEE3EAFBE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackUpWebSite", "BackUpWebSite\BackUpWebSite.csproj", "{EE4B1EA8-1344-468D-A5C4-BF66044CDB8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,12 +23,10 @@ Global
 		{ECB6FAB1-9A80-4047-BD75-9B76986DB000}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECB6FAB1-9A80-4047-BD75-9B76986DB000}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECB6FAB1-9A80-4047-BD75-9B76986DB000}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7FCE950A-04E8-48D5-869E-53437574D8A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FCE950A-04E8-48D5-869E-53437574D8A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EF47002-BC6E-47FE-A690-941FEE3EAFBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EF47002-BC6E-47FE-A690-941FEE3EAFBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EF47002-BC6E-47FE-A690-941FEE3EAFBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EF47002-BC6E-47FE-A690-941FEE3EAFBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE4B1EA8-1344-468D-A5C4-BF66044CDB8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE4B1EA8-1344-468D-A5C4-BF66044CDB8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE4B1EA8-1344-468D-A5C4-BF66044CDB8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE4B1EA8-1344-468D-A5C4-BF66044CDB8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
