@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<language name="zh-cn" display="中文简体">
+  <item key="MainForm_Text">数据打包</item>
+  <item key="MainForm_MenuItem_File">文件</item>
+  <item key="MainForm_MenuItem_File_Open">打开</item>
+  <item key="MainForm_MenuItem_File_Connect">链接</item>
+  <item key="MainForm_TreeNode_Table">表</item>
+  <item key="MainFrom_TreeNode_View">视图</item>
+  <item key="MianForm_ToolStripMenuItemData">查看数据</item>
+  <item key="MianForm_ToolStripMenuItemDesign">查看设计</item>
+  <item key="MianForm_ToolStripMenuItemScript">查看脚本</item>
+  <item key="MainForm_ToolStripMenuItem_Seeting">设置</item>
+  <item key="MainForm_ToolStripMenuItemS_Seeting_SelectLanuage">选择语言</item>
+  <item key="MainForm_ErrorMessage_QueryDataBaseObjectInfo">获取数据库对象信息失败</item>
+  <item key=""></item>
+  <item key=""></item>
+  <item key=""></item>
+  <item key=""></item>
+  <item key=""></item>
+  <item key=""></item>
+  <item key=""></item>
+  <item key=""></item>
+</language>
