@@ -28,19 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.panelTop = new System.Windows.Forms.Panel();
-            this.txtNotContains = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.gbIgrone = new System.Windows.Forms.GroupBox();
+            this.dgvIgrone = new System.Windows.Forms.DataGridView();
+            this.colContent = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cboSortType = new System.Windows.Forms.ComboBox();
+            this.cboSort = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnQuery = new System.Windows.Forms.Button();
             this.txtKeyWord = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.grid = new System.Windows.Forms.DataGridView();
-            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colCreateDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colModefiyDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tssLblServer = new System.Windows.Forms.ToolStripStatusLabel();
@@ -59,7 +62,17 @@
             this.txtScript = new ScintillaNET.Scintilla();
             this.panelLeft = new System.Windows.Forms.Panel();
             this.panelRight = new System.Windows.Forms.Panel();
+            this.cmsGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmiAddIgrone = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmsGridIgrone = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmiRemoveIgrone = new System.Windows.Forms.ToolStripMenuItem();
+            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCreateDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colModefiyDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelTop.SuspendLayout();
+            this.gbIgrone.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvIgrone)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.gbLeft.SuspendLayout();
@@ -67,12 +80,16 @@
             this.gbRight.SuspendLayout();
             this.panelLeft.SuspendLayout();
             this.panelRight.SuspendLayout();
+            this.cmsGrid.SuspendLayout();
+            this.cmsGridIgrone.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelTop
             // 
-            this.panelTop.Controls.Add(this.txtNotContains);
-            this.panelTop.Controls.Add(this.label3);
+            this.panelTop.Controls.Add(this.gbIgrone);
+            this.panelTop.Controls.Add(this.cboSortType);
+            this.panelTop.Controls.Add(this.cboSort);
+            this.panelTop.Controls.Add(this.label4);
             this.panelTop.Controls.Add(this.txtName);
             this.panelTop.Controls.Add(this.label2);
             this.panelTop.Controls.Add(this.btnQuery);
@@ -81,25 +98,83 @@
             this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTop.Location = new System.Drawing.Point(5, 19);
             this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(604, 65);
+            this.panelTop.Size = new System.Drawing.Size(604, 192);
             this.panelTop.TabIndex = 0;
             // 
-            // txtNotContains
+            // gbIgrone
             // 
-            this.txtNotContains.Location = new System.Drawing.Point(265, 36);
-            this.txtNotContains.Name = "txtNotContains";
-            this.txtNotContains.Size = new System.Drawing.Size(314, 21);
-            this.txtNotContains.TabIndex = 7;
-            this.txtNotContains.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+            this.gbIgrone.Controls.Add(this.dgvIgrone);
+            this.gbIgrone.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.gbIgrone.Location = new System.Drawing.Point(0, 63);
+            this.gbIgrone.Name = "gbIgrone";
+            this.gbIgrone.Size = new System.Drawing.Size(604, 129);
+            this.gbIgrone.TabIndex = 11;
+            this.gbIgrone.TabStop = false;
+            this.gbIgrone.Text = "忽略";
             // 
-            // label3
+            // dgvIgrone
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 41);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(245, 12);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "不包含的关键字(多个关键字使用“，”分割)";
+            this.dgvIgrone.AllowUserToAddRows = false;
+            this.dgvIgrone.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dgvIgrone.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dgvIgrone.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvIgrone.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colContent,
+            this.colType});
+            this.dgvIgrone.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvIgrone.Location = new System.Drawing.Point(3, 17);
+            this.dgvIgrone.MultiSelect = false;
+            this.dgvIgrone.Name = "dgvIgrone";
+            this.dgvIgrone.ReadOnly = true;
+            this.dgvIgrone.RowTemplate.Height = 23;
+            this.dgvIgrone.Size = new System.Drawing.Size(598, 109);
+            this.dgvIgrone.TabIndex = 0;
+            this.dgvIgrone.CellContextMenuStripNeeded += new System.Windows.Forms.DataGridViewCellContextMenuStripNeededEventHandler(this.grid_CellContextMenuStripNeeded);
+            this.dgvIgrone.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.grid_RowPostPaint);
+            // 
+            // colContent
+            // 
+            this.colContent.DataPropertyName = "Content";
+            this.colContent.FillWeight = 330F;
+            this.colContent.HeaderText = "内容";
+            this.colContent.Name = "colContent";
+            this.colContent.ReadOnly = true;
+            this.colContent.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colContent.Width = 330;
+            // 
+            // colType
+            // 
+            this.colType.DataPropertyName = "IgroneType";
+            this.colType.HeaderText = "类型";
+            this.colType.Name = "colType";
+            this.colType.ReadOnly = true;
+            // 
+            // cboSortType
+            // 
+            this.cboSortType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSortType.FormattingEnabled = true;
+            this.cboSortType.Location = new System.Drawing.Point(199, 37);
+            this.cboSortType.Name = "cboSortType";
+            this.cboSortType.Size = new System.Drawing.Size(97, 20);
+            this.cboSortType.TabIndex = 10;
+            // 
+            // cboSort
+            // 
+            this.cboSort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSort.FormattingEnabled = true;
+            this.cboSort.Location = new System.Drawing.Point(81, 37);
+            this.cboSort.Name = "cboSort";
+            this.cboSort.Size = new System.Drawing.Size(97, 20);
+            this.cboSort.TabIndex = 9;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 40);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(53, 12);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "排序方式";
             // 
             // txtName
             // 
@@ -159,46 +234,16 @@
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(5, 0);
             this.grid.Margin = new System.Windows.Forms.Padding(0);
+            this.grid.MultiSelect = false;
             this.grid.Name = "grid";
             this.grid.ReadOnly = true;
             this.grid.RowTemplate.Height = 23;
-            this.grid.Size = new System.Drawing.Size(596, 253);
+            this.grid.Size = new System.Drawing.Size(596, 331);
             this.grid.TabIndex = 1;
+            this.grid.CellContextMenuStripNeeded += new System.Windows.Forms.DataGridViewCellContextMenuStripNeededEventHandler(this.grid_CellContextMenuStripNeeded);
             this.grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellDoubleClick);
             this.grid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.grid_CellFormatting);
             this.grid.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.grid_RowPostPaint);
-            // 
-            // colId
-            // 
-            this.colId.DataPropertyName = "id";
-            this.colId.HeaderText = "ID";
-            this.colId.Name = "colId";
-            this.colId.ReadOnly = true;
-            this.colId.Visible = false;
-            // 
-            // colName
-            // 
-            this.colName.DataPropertyName = "name";
-            this.colName.HeaderText = "名称";
-            this.colName.Name = "colName";
-            this.colName.ReadOnly = true;
-            this.colName.Width = 330;
-            // 
-            // colCreateDate
-            // 
-            this.colCreateDate.DataPropertyName = "create_date";
-            this.colCreateDate.HeaderText = "创建时间";
-            this.colCreateDate.Name = "colCreateDate";
-            this.colCreateDate.ReadOnly = true;
-            this.colCreateDate.Width = 150;
-            // 
-            // colModefiyDate
-            // 
-            this.colModefiyDate.DataPropertyName = "modify_date";
-            this.colModefiyDate.HeaderText = "修改时间";
-            this.colModefiyDate.Name = "colModefiyDate";
-            this.colModefiyDate.ReadOnly = true;
-            this.colModefiyDate.Width = 150;
             // 
             // statusStrip1
             // 
@@ -214,7 +259,7 @@
             this.tssLblSplit4,
             this.tssLblRowCount,
             this.toolStripStatusLabel5});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 352);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 557);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.ManagerRenderMode;
             this.statusStrip1.Size = new System.Drawing.Size(980, 22);
@@ -296,7 +341,7 @@
             this.gbLeft.Location = new System.Drawing.Point(5, 5);
             this.gbLeft.Name = "gbLeft";
             this.gbLeft.Padding = new System.Windows.Forms.Padding(5, 5, 3, 5);
-            this.gbLeft.Size = new System.Drawing.Size(612, 342);
+            this.gbLeft.Size = new System.Drawing.Size(612, 547);
             this.gbLeft.TabIndex = 4;
             this.gbLeft.TabStop = false;
             this.gbLeft.Text = "浏览";
@@ -305,10 +350,10 @@
             // 
             this.panelGrid.Controls.Add(this.grid);
             this.panelGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelGrid.Location = new System.Drawing.Point(5, 84);
+            this.panelGrid.Location = new System.Drawing.Point(5, 211);
             this.panelGrid.Name = "panelGrid";
             this.panelGrid.Padding = new System.Windows.Forms.Padding(5, 0, 3, 0);
-            this.panelGrid.Size = new System.Drawing.Size(604, 253);
+            this.panelGrid.Size = new System.Drawing.Size(604, 331);
             this.panelGrid.TabIndex = 2;
             // 
             // gbRight
@@ -318,7 +363,7 @@
             this.gbRight.Location = new System.Drawing.Point(3, 5);
             this.gbRight.Name = "gbRight";
             this.gbRight.Padding = new System.Windows.Forms.Padding(3, 5, 5, 5);
-            this.gbRight.Size = new System.Drawing.Size(352, 342);
+            this.gbRight.Size = new System.Drawing.Size(352, 547);
             this.gbRight.TabIndex = 5;
             this.gbRight.TabStop = false;
             this.gbRight.Text = "存储过程脚本";
@@ -329,7 +374,7 @@
             this.txtScript.Location = new System.Drawing.Point(3, 19);
             this.txtScript.Name = "txtScript";
             this.txtScript.ReadOnly = true;
-            this.txtScript.Size = new System.Drawing.Size(344, 318);
+            this.txtScript.Size = new System.Drawing.Size(344, 523);
             this.txtScript.TabIndex = 0;
             this.txtScript.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtScript_KeyDown);
             // 
@@ -340,7 +385,7 @@
             this.panelLeft.Location = new System.Drawing.Point(0, 0);
             this.panelLeft.Name = "panelLeft";
             this.panelLeft.Padding = new System.Windows.Forms.Padding(5, 5, 3, 5);
-            this.panelLeft.Size = new System.Drawing.Size(620, 352);
+            this.panelLeft.Size = new System.Drawing.Size(620, 557);
             this.panelLeft.TabIndex = 6;
             // 
             // panelRight
@@ -350,23 +395,88 @@
             this.panelRight.Location = new System.Drawing.Point(620, 0);
             this.panelRight.Name = "panelRight";
             this.panelRight.Padding = new System.Windows.Forms.Padding(3, 5, 5, 5);
-            this.panelRight.Size = new System.Drawing.Size(360, 352);
+            this.panelRight.Size = new System.Drawing.Size(360, 557);
             this.panelRight.TabIndex = 7;
+            // 
+            // cmsGrid
+            // 
+            this.cmsGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiAddIgrone});
+            this.cmsGrid.Name = "cmsGridRightClick";
+            this.cmsGrid.ShowImageMargin = false;
+            this.cmsGrid.Size = new System.Drawing.Size(100, 26);
+            this.cmsGrid.Text = "添加忽略";
+            // 
+            // tsmiAddIgrone
+            // 
+            this.tsmiAddIgrone.Name = "tsmiAddIgrone";
+            this.tsmiAddIgrone.Size = new System.Drawing.Size(99, 22);
+            this.tsmiAddIgrone.Text = "添加忽略";
+            this.tsmiAddIgrone.Click += new System.EventHandler(this.tsmiAddIgrone_Click);
+            // 
+            // cmsGridIgrone
+            // 
+            this.cmsGridIgrone.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiRemoveIgrone});
+            this.cmsGridIgrone.Name = "cmsGridIgrone";
+            this.cmsGridIgrone.Size = new System.Drawing.Size(125, 26);
+            // 
+            // tsmiRemoveIgrone
+            // 
+            this.tsmiRemoveIgrone.Name = "tsmiRemoveIgrone";
+            this.tsmiRemoveIgrone.Size = new System.Drawing.Size(124, 22);
+            this.tsmiRemoveIgrone.Text = "移除忽略";
+            this.tsmiRemoveIgrone.Click += new System.EventHandler(this.tsmiRemoveIgrone_Click);
+            // 
+            // colId
+            // 
+            this.colId.DataPropertyName = "object_id";
+            this.colId.HeaderText = "ID";
+            this.colId.Name = "colId";
+            this.colId.ReadOnly = true;
+            this.colId.Visible = false;
+            // 
+            // colName
+            // 
+            this.colName.DataPropertyName = "name";
+            this.colName.HeaderText = "名称";
+            this.colName.Name = "colName";
+            this.colName.ReadOnly = true;
+            this.colName.Width = 330;
+            // 
+            // colCreateDate
+            // 
+            this.colCreateDate.DataPropertyName = "create_date";
+            this.colCreateDate.HeaderText = "创建时间";
+            this.colCreateDate.Name = "colCreateDate";
+            this.colCreateDate.ReadOnly = true;
+            this.colCreateDate.Width = 150;
+            // 
+            // colModefiyDate
+            // 
+            this.colModefiyDate.DataPropertyName = "modify_date";
+            this.colModefiyDate.HeaderText = "修改时间";
+            this.colModefiyDate.Name = "colModefiyDate";
+            this.colModefiyDate.ReadOnly = true;
+            this.colModefiyDate.Width = 150;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(980, 374);
+            this.ClientSize = new System.Drawing.Size(980, 579);
             this.Controls.Add(this.panelRight);
             this.Controls.Add(this.panelLeft);
             this.Controls.Add(this.statusStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Main";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.Load += new System.EventHandler(this.Main_Load);
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
+            this.gbIgrone.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvIgrone)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -375,6 +485,8 @@
             this.gbRight.ResumeLayout(false);
             this.panelLeft.ResumeLayout(false);
             this.panelRight.ResumeLayout(false);
+            this.cmsGrid.ResumeLayout(false);
+            this.cmsGridIgrone.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -401,17 +513,26 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
         private System.Windows.Forms.TextBox txtName;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtNotContains;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colCreateDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colModefiyDate;
         private System.Windows.Forms.GroupBox gbLeft;
         private System.Windows.Forms.GroupBox gbRight;
         private ScintillaNET.Scintilla txtScript;
         private System.Windows.Forms.Panel panelLeft;
         private System.Windows.Forms.Panel panelRight;
         private System.Windows.Forms.Panel panelGrid;
+        private System.Windows.Forms.ComboBox cboSort;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox gbIgrone;
+        private System.Windows.Forms.DataGridView dgvIgrone;
+        private System.Windows.Forms.ComboBox cboSortType;
+        private System.Windows.Forms.ContextMenuStrip cmsGrid;
+        private System.Windows.Forms.ToolStripMenuItem tsmiAddIgrone;
+        private System.Windows.Forms.ContextMenuStrip cmsGridIgrone;
+        private System.Windows.Forms.ToolStripMenuItem tsmiRemoveIgrone;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colContent;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCreateDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colModefiyDate;
     }
 }

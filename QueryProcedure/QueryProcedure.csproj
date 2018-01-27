@@ -46,6 +46,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>find.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
@@ -74,6 +77,14 @@
       <DependentUpon>FindWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Logger.cs" />
+    <Compile Include="FormMask.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMask.Designer.cs">
+      <DependentUpon>FormMask.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBObjects.cs" />
+    <Compile Include="Models\Igrone.cs" />
     <Compile Include="LoginServer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -92,6 +103,9 @@
     <EmbeddedResource Include="FindWindow.resx">
       <DependentUpon>FindWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormMask.resx">
+      <DependentUpon>FormMask.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoginServer.resx">
       <DependentUpon>LoginServer.cs</DependentUpon>
     </EmbeddedResource>
@@ -106,6 +120,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -134,6 +149,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loding.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="find.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

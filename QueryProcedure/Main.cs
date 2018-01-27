@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace QueryProcedure
@@ -43,6 +44,9 @@ namespace QueryProcedure
 
         private SearchFlags searchFlags = SearchFlags.None;
 
+        private List<Igrone> igrones = null;
+        private List<Models.DBObject> objects = null;
+
         #endregion
 
         #region constructor
@@ -60,13 +64,24 @@ namespace QueryProcedure
             InitializeComponent();
             this.grid.AutoGenerateColumns = false;
 
-            this.txtNotContains.Text = "test,backup,bak";
-            var cScript = (Control)this.txtScript as Scintilla;
+            //this.txtNotContains.Text = "test,backup,bak";
+            var cScript = this.txtScript as Scintilla;
             if (cScript != null)
             {
                 cScript.Text = "";
                 InitializeScintillaControls(cScript);
             }
+
+            InitCobobox();
+
+            igrones = new List<Igrone>
+            {
+                new Igrone("test"),
+                new Igrone("backup"),
+                new Igrone("bak")
+            };
+            BindIgronesGrid();
+
         }
         #endregion
 
@@ -80,8 +95,9 @@ namespace QueryProcedure
                 return;
             }
             var nameKeyWord = this.txtName.Text.Trim();
-            var notContainsKeyWord = this.txtNotContains.Text.Trim();
-            BindGridData(keyWord, nameKeyWord, notContainsKeyWord);
+            var notContainsKeyWord = string.Empty;// this.txtNotContains.Text.Trim();
+            this.objects = GetObjects(keyWord, nameKeyWord, notContainsKeyWord);
+           
         }
         private void Main_Load(object sender, EventArgs e)
         {
@@ -166,11 +182,62 @@ namespace QueryProcedure
             }
         }
 
+        /// <summary>
+        /// 脚本显示控件，按下CTRL+F组合键事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtScript_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.F)
+            {
+                var target = this.txtScript.SelectedText;
 
+                var fw = new FindWindow(target, this.txtScript.Text);
+                fw.StartPosition = FormStartPosition.CenterParent;
+                fw.FindeNext += Fw_FindeNext;
+                fw.Show();
+            }
+        }
+        /// <summary>
+        /// 搜索窗体，搜索下一个按钮点击事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Fw_FindeNext(object sender, FindNextEventArgs e)
+        {
+            var index = e.NextIndex;
+
+            this.txtScript.SearchFlags = searchFlags;
+            this.txtScript.TargetStart = Math.Max(this.txtScript.CurrentPosition, this.txtScript.AnchorPosition);
+            this.txtScript.TargetEnd = this.txtScript.TextLength;
+
+            var pos = this.txtScript.SearchInTarget(e.SearchTarget);
+            if (pos >= 0)
+                this.txtScript.SetSel(this.txtScript.TargetStart, this.txtScript.TargetEnd);
+        }
+        /// <summary>
+        /// 查询内容输入框按钮按下事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                this.btnQuery.PerformClick();
+            }
+        }
         #endregion
 
         #region methods
-        private void BindGridData(string keyWord, string nameKeyWord, string notContainsKeyWord)
+        /// <summary>
+        /// 为列表查询绑定数据方法
+        /// </summary>
+        /// <param name="keyWord"></param>
+        /// <param name="nameKeyWord"></param>
+        /// <param name="notContainsKeyWord"></param>
+        private List<Models.DBObject> GetObjects(string keyWord, string nameKeyWord, string notContainsKeyWord)
         {
             var sqlComment = new StringBuilder("SELECT DISTINCT sys.objects.object_id AS id" +
                              "      ,sys.objects.name " +
@@ -201,39 +268,91 @@ namespace QueryProcedure
                     Value = "%" + nameKeyWord + "%"
                 });
             }
-            if (!string.IsNullOrEmpty(notContainsKeyWord))
+            if (this.igrones != null && this.igrones.Any())
             {
-                var arrKeyWords = notContainsKeyWord.ToUpper().Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Distinct();
-                foreach (var str in arrKeyWords)
+                var igronKeyWords = this.igrones.Where(o => string.Equals(o.IgroneType, "KeyWord"))
+                                                .Select(o => o.Content)
+                                                .AsEnumerable();
+                if (igronKeyWords.Any())
                 {
-                    var para = new SqlParameter
+                    foreach (string kw in igronKeyWords)
                     {
-                        ParameterName = "@NC" + str,
-                        SqlDbType = SqlDbType.VarChar,
-                        Value = "%" + str + "%"
-                    };
-                    sqlComment.Append(" AND sys.objects.name NOT LIKE " + para.ParameterName);
-                    paras.Add(para);
+                        var para = new SqlParameter
+                        {
+                            ParameterName = "@NotLike_" + kw,
+                            SqlDbType = SqlDbType.VarChar,
+                            Value = "%" + kw + "%"
+                        };
+                        sqlComment.Append(" AND sys.objects.name NOT LIKE " + para.ParameterName);
+                        paras.Add(para);
+                    }
                 }
+                var names = this.igrones.Where(o => string.Equals(o.IgroneType, "Name"))
+                                        .Select(o => o.Content)
+                                        .AsEnumerable();
+                if (names.Any())
+                {
+                    var nameParas = new List<SqlParameter>();
+                    foreach (string name in names)
+                    {
+                        var para = new SqlParameter
+                        {
+                            ParameterName = "@NotEquals_" + name,
+                            SqlDbType = SqlDbType.VarChar,
+                            Value = name
+                        };
+                    }
+                    paras.AddRange(nameParas);
+                    sqlComment.AppendFormat(" NOT IN ({0})", string.Join(",", nameParas.Select(p => p.ParameterName).ToArray()));
+                }
+
             }
+
+            var sort = string.Empty;
+
+            var item = this.cboSort.SelectedItem as dynamic;
+            if (item != null)
+            {
+                sort = item.Value;
+            }
+            if (!string.IsNullOrEmpty(sort))
+            {
+                item = this.cboSortType.SelectedItem as dynamic;
+                if (item != null)
+                {
+                    sort += " " + item.Value;
+                }
+                sqlComment.Append(" order by ");
+                sqlComment.Append(sort);
+            }
+
+            //Action<object> actionQuery = (s) => 
+            //{
             try
             {
                 IDictionary dic = new Dictionary<object, object>();
-                var dt = SqlHelper.ExecuteQuery(this.connectionString, sqlComment.ToString(), CommandType.Text, out dic, paras.ToArray());
-                this.rowCount = dt.Rows.Count.ToString();
-                this.grid.DataSource = dt;
+                var list = SqlHelper.ExecuteQuery<Models.DBObject>(this.connectionString, sqlComment.ToString(), out dic, paras.ToArray());
+                this.rowCount = list.Count.ToString();
+                
                 var et = (long)dic["ExecutionTime"];
                 ComputeTime(et);
                 this.rowCount = dic["SelectRows"].ToString();
                 ShowStipLabel();
+                return list;
             }
             catch (Exception ex)
             {
                 Common.ShowMessage("查询失败：" + ex.Message, "Error");
                 Logger.Error("根据关键字查询存储过程事变", ex);
             }
+            return new List<Models.DBObject>();
+            //};
+            //var state = (object)new string[] { };
+            //var task = new Task(actionQuery, state);
         }
-
+        /// <summary>
+        /// 状态栏显示
+        /// </summary>
         private void ShowStipLabel()
         {
             if (string.IsNullOrEmpty(this.server))
@@ -285,7 +404,10 @@ namespace QueryProcedure
                 this.tssLblRowCount.Text = rowCount + "行";
             }
         }
-
+        /// <summary>
+        /// 将数据库执行时间由秒数转换为0：00：00的格式
+        /// </summary>
+        /// <param name="seconds"></param>
         private void ComputeTime(long seconds)
         {
             seconds = seconds / 1000;
@@ -303,7 +425,11 @@ namespace QueryProcedure
             }
             this.executeTime = hour.ToString().PadLeft(2, '0') + ":" + min.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0');
         }
-
+        /// <summary>
+        /// 查询存储过程脚本
+        /// </summary>
+        /// <param name="prodecureName"></param>
+        /// <returns></returns>
         private DataTable GetProcedureScripts(string prodecureName)
         {
             var sqlCommand = "declare @object_id	int,                                                                 " +
@@ -346,7 +472,11 @@ namespace QueryProcedure
                 throw new Exception("查询存储过程脚本错误", ex);
             }
         }
-
+        /// <summary>
+        /// 格式化存储过程脚本
+        /// </summary>
+        /// <param name="dtScripts"></param>
+        /// <returns></returns>
         private string FormatScript(DataTable dtScripts)
         {
             var sb = new StringBuilder();
@@ -365,7 +495,10 @@ namespace QueryProcedure
             var script = sb.ToString();
             return script;
         }
-
+        /// <summary>
+        /// 初始化脚本显示控件
+        /// </summary>
+        /// <param name="scintilla"></param>
         private void InitializeScintillaControls(Scintilla scintilla)
         {
 
@@ -385,7 +518,7 @@ namespace QueryProcedure
             scintilla.Lexer = Lexer.Sql;
 
             // Show line numbers
-            scintilla.Margins[0].Width = 20;
+            scintilla.Margins[0].Width = 30;
 
             // Set the Styles
             scintilla.Styles[Style.Sql.Identifier].ForeColor = Color.SeaGreen;
@@ -684,7 +817,10 @@ namespace QueryProcedure
 
             scintilla.Text = "";
         }
-
+        /// <summary>
+        /// 获取脚本字体
+        /// </summary>
+        /// <returns></returns>
         private string PreferredFont()
         {
             return "宋体";
@@ -698,40 +834,100 @@ namespace QueryProcedure
             //    preferredFont = "宋体";
             //return preferredFont;
         }
+
+        private void InitCobobox()
+        {
+            var sortItems = new object[]
+            {
+                new { Text = "名称", Value = "name"},
+                new { Text = "创建时间",Value = "create_date"},
+                new { Text = "最后修改时间", Value = "modify_date"}
+            };
+            this.cboSort.Items.Clear();
+            this.cboSort.Items.AddRange(sortItems);
+            this.cboSort.DisplayMember = "Text";
+            this.cboSort.ValueMember = "Value";
+            this.cboSort.SelectedIndex = 2;
+
+            var sortTypeItems = new object[]
+            {
+                new { Text = "升序", Value = "asc"},
+                new { Text = "降序",Value = "desc"}
+            };
+            this.cboSortType.Items.Clear();
+            this.cboSortType.Items.AddRange(sortTypeItems);
+            this.cboSortType.DisplayMember = "Text";
+            this.cboSortType.ValueMember = "Value";
+            this.cboSortType.SelectedIndex = 1;
+        }
+
+        private void BindIgronesGrid()
+        {
+            BindingSource source = new BindingSource();
+            source.DataSource = this.igrones;
+            this.dgvIgrone.DataSource = source;
+        }
+
+        private void BindObjectGrid()
+        {
+            var nc = this.igrones.Where(o => string.Equals(o.IgroneType, "KeyWord")).Select(o => o.Content).AsQueryable();
+            var names = this.igrones.Where(o => string.Equals(o.IgroneType, "Name")).Select(o => o.Content).AsQueryable();
+            var objs = (from o in this.objects
+                           where nc.All(c=>!o.name.Contains(c))
+                           && names.Contains(o.name)
+                           select new Models.DBObject
+                           {
+                               object_id = o.object_id,
+                               name = o.name,
+                               create_date = o.create_date,
+                               modify_date = o.modify_date
+                           }).ToList();
+            BindingSource bs = new BindingSource();
+            bs.DataSource = objs;
+            this.grid.DataSource = bs;
+        }
+
         #endregion
 
-        private void txtScript_KeyDown(object sender, KeyEventArgs e)
+        private void grid_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.F)
+            this.grid.ContextMenuStrip = this.dgvIgrone.ContextMenuStrip = null;
+            if (e.RowIndex >= 0)
             {
-                var target = this.txtScript.SelectedText;
-
-                var fw = new FindWindow(target, this.txtScript.Text);
-                fw.StartPosition = FormStartPosition.CenterParent;
-                fw.FindeNext += Fw_FindeNext;
-                fw.Show();
+                if (sender == this.grid
+                    && this.grid.SelectedCells[0].RowIndex == e.RowIndex
+                    && this.grid.SelectedCells[0].ColumnIndex == e.ColumnIndex)
+                {
+                    this.grid.ContextMenuStrip = this.cmsGrid;
+                }
+                else if (sender == this.dgvIgrone
+                    && this.dgvIgrone.SelectedCells[0].RowIndex == e.RowIndex
+                    && this.dgvIgrone.SelectedCells[0].ColumnIndex == e.ColumnIndex)
+                {
+                    this.dgvIgrone.ContextMenuStrip = this.cmsGridIgrone;
+                }
             }
         }
 
-        private void Fw_FindeNext(object sender, FindNextEventArgs e)
+        private void tsmiAddIgrone_Click(object sender, EventArgs e)
         {
-            var index = e.NextIndex;
-
-            this.txtScript.SearchFlags = searchFlags;
-            this.txtScript.TargetStart = Math.Max(this.txtScript.CurrentPosition, this.txtScript.AnchorPosition);
-            this.txtScript.TargetEnd = this.txtScript.TextLength;
-
-            var pos = this.txtScript.SearchInTarget(e.SearchTarget);
-            if (pos >= 0)
-                this.txtScript.SetSel(this.txtScript.TargetStart, this.txtScript.TargetEnd);
+            var igrone = this.grid.SelectedCells.Count == 0 ? string.Empty : this.grid.SelectedCells[0].Value as string;
+            if (string.IsNullOrEmpty(igrone)) return;
+            if (this.igrones.Any(o => string.Equals(o.Content, igrone))) return;
+            this.igrones.Add(new Igrone(igrone, "Name"));
+            BindIgronesGrid();
+            BindObjectGrid();
         }
 
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        private void tsmiRemoveIgrone_Click(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                this.btnQuery.PerformClick();
-            }
+            var igrone = this.dgvIgrone.SelectedCells.Count == 0 ? string.Empty : this.dgvIgrone.SelectedCells[0].Value as string;
+            if (string.IsNullOrEmpty(igrone)) return;
+            var item = this.igrones.FirstOrDefault(o => string.Equals(o.Content, igrone));
+            this.igrones.Remove(item);
+
+            BindIgronesGrid();
+            BindObjectGrid();
         }
     }
 }

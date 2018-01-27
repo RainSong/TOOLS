@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 
 namespace QueryProcedure
 {
@@ -67,11 +68,11 @@ namespace QueryProcedure
             IDictionary dic = new Dictionary<string, object>();
             return ExecuteQuery(connectionString, sqlCommentText, commandType, out dic, paramters);
         }
-        
-        public static DataTable ExecuteQuery(string connectionString, 
-            string sqlCommentText, 
-            CommandType commandType, 
-            out IDictionary statistics, 
+
+        public static DataTable ExecuteQuery(string connectionString,
+            string sqlCommentText,
+            CommandType commandType,
+            out IDictionary statistics,
             params SqlParameter[] paramters)
         {
             using (var conn = GetOpenConnection(connectionString))
@@ -97,6 +98,49 @@ namespace QueryProcedure
         public static DataTable ExecuteQuery(string connectionString, string sqlCommentText, out IDictionary statistics, params SqlParameter[] paramters)
         {
             return ExecuteQuery(connectionString, sqlCommentText, CommandType.Text, out statistics, paramters);
+        }
+
+        public static List<T> ExecuteQuery<T>(string connectionString, string sqlCommentText, out IDictionary statistics, params SqlParameter[] paramters)
+        {
+            var dt = ExecuteQuery(connectionString, sqlCommentText, out statistics, paramters);
+            return dt.ToList<T>();
+        }
+    }
+
+    public static class DataTableHelper
+    {
+        public static List<T> ToList<T>(this DataTable dt)
+        {
+            var list = new List<T>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                list.Add(dr.ToEntity<T>());
+            }
+            return list;
+        }
+        public static T ToEntity<T>(this DataRow row)
+        {
+            var entity = Activator.CreateInstance<T>();
+            var type = entity.GetType();
+            var properties = type.GetProperties();
+            foreach (PropertyInfo pi in properties)
+            {
+                if (row.Table.Columns.Contains(pi.Name))
+                {
+                    var value = row[pi.Name];
+                    try
+                    {
+                        value = Convert.ChangeType(value, pi.PropertyType);
+                        pi.SetValue(entity, value);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }
+            return entity;
         }
     }
 }
