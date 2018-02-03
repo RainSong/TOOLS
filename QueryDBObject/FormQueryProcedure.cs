@@ -7,12 +7,11 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QueryProcedure
+namespace QueryDBObject
 {
-    public partial class Main : Form
+    public partial class FormQueryProcedure : Form
     {
 
         #region fields
@@ -44,24 +43,25 @@ namespace QueryProcedure
 
         private SearchFlags searchFlags = SearchFlags.None;
 
-        private List<Igrone> igrones = null;
-        private List<Models.DBObject> objects = null;
+        private List<Models.Igrone> igrones = null;
+        private List<Models.DBProcedure> objects = null;
 
         #endregion
 
         #region constructor
 
-        public Main(SqlConnectionStringBuilder conStringBuilder)
+        public FormQueryProcedure(SqlConnectionStringBuilder conStringBuilder)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.WindowState = FormWindowState.Maximized;
+            InitializeComponent();
+            //this.StartPosition = FormStartPosition.CenterScreen;
+            //this.WindowState = FormWindowState.Maximized;
 
             this.connectionString = conStringBuilder.ToString();
             this.server = conStringBuilder.DataSource;
             this.uid = conStringBuilder.UserID;
             this.dbName = conStringBuilder.InitialCatalog;
 
-            InitializeComponent();
+            
             this.grid.AutoGenerateColumns = false;
 
             //this.txtNotContains.Text = "test,backup,bak";
@@ -74,13 +74,14 @@ namespace QueryProcedure
 
             InitCobobox();
 
-            igrones = new List<Igrone>
+            igrones = new List<Models.Igrone>
             {
-                new Igrone("test"),
-                new Igrone("backup"),
-                new Igrone("bak")
+                new Models.Igrone("test"),
+                new Models.Igrone("backup"),
+                new Models.Igrone("bak")
             };
             BindIgronesGrid();
+
 
         }
         #endregion
@@ -97,7 +98,8 @@ namespace QueryProcedure
             var nameKeyWord = this.txtName.Text.Trim();
             var notContainsKeyWord = string.Empty;// this.txtNotContains.Text.Trim();
             this.objects = GetObjects(keyWord, nameKeyWord, notContainsKeyWord);
-           
+            BindObjectGrid();
+
         }
         private void Main_Load(object sender, EventArgs e)
         {
@@ -161,23 +163,27 @@ namespace QueryProcedure
         {
             if (e.RowIndex > -1)
             {
-                DataRowView drv = (sender as DataGridView).Rows[e.RowIndex].DataBoundItem as DataRowView;
-                var objName = drv["name"];
-                if (objName == null) return;
-                var procedureName = objName.ToString();
-                DataTable dtScripts = null;
-                try
+                Models.DBProcedure obj = (sender as DataGridView).Rows[e.RowIndex].DataBoundItem as Models.DBProcedure;
+                if (obj == null) return;
+                if (string.IsNullOrEmpty(obj.script))
                 {
-                    dtScripts = GetProcedureScripts(procedureName);
-                }
-                catch (Exception ex)
-                {
-                    Common.ShowMessage(ex.Message, "Error");
-                    Logger.Error(string.Format("查询脚存储过程{0}本失败", objName), ex);
-                    return;
+                    if (string.IsNullOrEmpty(obj.name)) return;
+                    var procedureName = obj.name;
+                    DataTable dtScripts = null;
+                    try
+                    {
+                        dtScripts = GetProcedureScripts(procedureName);
+                        obj.script = FormatScript(dtScripts);
+                    }
+                    catch (Exception ex)
+                    {
+                        Common.ShowMessage(ex.Message, "Error");
+                        Logger.Error(string.Format("查询脚存储过程{0}本失败", obj.script), ex);
+                        return;
+                    }
                 }
                 this.txtScript.ReadOnly = false;
-                this.txtScript.Text = FormatScript(dtScripts);
+                this.txtScript.Text = obj.script;
                 this.txtScript.ReadOnly = true;
             }
         }
@@ -237,7 +243,7 @@ namespace QueryProcedure
         /// <param name="keyWord"></param>
         /// <param name="nameKeyWord"></param>
         /// <param name="notContainsKeyWord"></param>
-        private List<Models.DBObject> GetObjects(string keyWord, string nameKeyWord, string notContainsKeyWord)
+        private List<Models.DBProcedure> GetObjects(string keyWord, string nameKeyWord, string notContainsKeyWord)
         {
             var sqlComment = new StringBuilder("SELECT DISTINCT sys.objects.object_id AS id" +
                              "      ,sys.objects.name " +
@@ -301,9 +307,10 @@ namespace QueryProcedure
                             SqlDbType = SqlDbType.VarChar,
                             Value = name
                         };
+                        nameParas.Add(para);
                     }
                     paras.AddRange(nameParas);
-                    sqlComment.AppendFormat(" NOT IN ({0})", string.Join(",", nameParas.Select(p => p.ParameterName).ToArray()));
+                    sqlComment.AppendFormat(" sys.objects.name NOT IN ({0})", string.Join(",", nameParas.Select(p => p.ParameterName).ToArray()));
                 }
 
             }
@@ -331,9 +338,9 @@ namespace QueryProcedure
             try
             {
                 IDictionary dic = new Dictionary<object, object>();
-                var list = SqlHelper.ExecuteQuery<Models.DBObject>(this.connectionString, sqlComment.ToString(), out dic, paras.ToArray());
+                var list = SqlHelper.ExecuteQuery<Models.DBProcedure>(this.connectionString, sqlComment.ToString(), out dic, paras.ToArray());
                 this.rowCount = list.Count.ToString();
-                
+
                 var et = (long)dic["ExecutionTime"];
                 ComputeTime(et);
                 this.rowCount = dic["SelectRows"].ToString();
@@ -345,7 +352,7 @@ namespace QueryProcedure
                 Common.ShowMessage("查询失败：" + ex.Message, "Error");
                 Logger.Error("根据关键字查询存储过程事变", ex);
             }
-            return new List<Models.DBObject>();
+            return new List<Models.DBProcedure>();
             //};
             //var state = (object)new string[] { };
             //var task = new Task(actionQuery, state);
@@ -870,20 +877,32 @@ namespace QueryProcedure
 
         private void BindObjectGrid()
         {
-            var nc = this.igrones.Where(o => string.Equals(o.IgroneType, "KeyWord")).Select(o => o.Content).AsQueryable();
-            var names = this.igrones.Where(o => string.Equals(o.IgroneType, "Name")).Select(o => o.Content).AsQueryable();
-            var objs = (from o in this.objects
-                           where nc.All(c=>!o.name.Contains(c))
-                           && names.Contains(o.name)
-                           select new Models.DBObject
-                           {
-                               object_id = o.object_id,
-                               name = o.name,
-                               create_date = o.create_date,
-                               modify_date = o.modify_date
-                           }).ToList();
+            IQueryable<Models.DBProcedure> objs = null;
+            if (this.objects != null)
+            {
+                var nc = this.igrones.Where(o => string.Equals(o.IgroneType, "KeyWord")).Select(o => o.Content).AsQueryable();
+                objs = this.objects.AsQueryable();
+                if (nc.Any())
+                    objs = objs.Where(o => !nc.Any(c => o.name.Contains(c)));
+                var names = this.igrones.Where(o => string.Equals(o.IgroneType, "Name")).Select(o => o.Content).AsQueryable();
+                if (names.Any())
+                    objs = objs.Where(o => !names.Contains(o.name));
+                //var objs = (from o in this.objects
+                //            where 
+                //            && !names.Contains(o.name)
+                //            select new Models.DBObject
+                //            {
+                //                id = o.id,
+                //                name = o.name,
+                //                create_date = o.create_date,
+                //                modify_date = o.modify_date
+                //            }).ToList();
+            }
             BindingSource bs = new BindingSource();
-            bs.DataSource = objs;
+            if (objs != null)
+            {
+                bs.DataSource = objs.ToList();
+            }
             this.grid.DataSource = bs;
         }
 
@@ -914,7 +933,7 @@ namespace QueryProcedure
             var igrone = this.grid.SelectedCells.Count == 0 ? string.Empty : this.grid.SelectedCells[0].Value as string;
             if (string.IsNullOrEmpty(igrone)) return;
             if (this.igrones.Any(o => string.Equals(o.Content, igrone))) return;
-            this.igrones.Add(new Igrone(igrone, "Name"));
+            this.igrones.Add(new Models.Igrone(igrone, "Name"));
             BindIgronesGrid();
             BindObjectGrid();
         }
@@ -927,6 +946,22 @@ namespace QueryProcedure
             this.igrones.Remove(item);
 
             BindIgronesGrid();
+            BindObjectGrid();
+        }
+
+        private void dgvIgrone_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            var igrone = this.dgvIgrone.Rows[e.RowIndex].DataBoundItem as Models.Igrone;
+            if (igrone == null) igrone = new Models.Igrone();
+            igrone.Content = this.dgvIgrone.Rows[e.RowIndex].Cells[1].Value as string;
+            igrone.IgroneType = this.dgvIgrone.Rows[e.RowIndex].Cells[2].Value as string;
+            if (!this.igrones.Any(o => string.Equals(o.ID, igrone.ID)))
+            {
+                this.igrones.Add(igrone);
+                BindIgronesGrid();
+            }
+            if (string.IsNullOrEmpty(igrone.Content) || string.IsNullOrEmpty(igrone.IgroneType)) return;
+
             BindObjectGrid();
         }
     }

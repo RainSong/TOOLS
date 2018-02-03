@@ -1,6 +1,6 @@
-﻿namespace QueryTable
+﻿namespace QueryDBObject
 {
-    partial class Main
+    partial class FormQueryProcedure
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormQueryProcedure));
             this.panelTop = new System.Windows.Forms.Panel();
             this.gbIgrone = new System.Windows.Forms.GroupBox();
             this.dgvIgrone = new System.Windows.Forms.DataGridView();
@@ -64,21 +64,13 @@
             this.gbLeft = new System.Windows.Forms.GroupBox();
             this.panelGrid = new System.Windows.Forms.Panel();
             this.gbRight = new System.Windows.Forms.GroupBox();
+            this.txtScript = new ScintillaNET.Scintilla();
             this.panelLeft = new System.Windows.Forms.Panel();
             this.panelRight = new System.Windows.Forms.Panel();
             this.cmsGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiAddIgrone = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsGridIgrone = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiRemoveIgrone = new System.Windows.Forms.ToolStripMenuItem();
-            this.dgvColumnInfo = new System.Windows.Forms.DataGridView();
-            this.colColumnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colColumnDataType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colColumnMaxLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colColumnNullAble = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colColumnIdentity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colColumnDefault = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colColumnPrimary = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colColumnDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelTop.SuspendLayout();
             this.gbIgrone.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvIgrone)).BeginInit();
@@ -91,7 +83,6 @@
             this.panelRight.SuspendLayout();
             this.cmsGrid.SuspendLayout();
             this.cmsGridIgrone.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvColumnInfo)).BeginInit();
             this.SuspendLayout();
             // 
             // panelTop
@@ -405,7 +396,7 @@
             // 
             // gbRight
             // 
-            this.gbRight.Controls.Add(this.dgvColumnInfo);
+            this.gbRight.Controls.Add(this.txtScript);
             this.gbRight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbRight.Location = new System.Drawing.Point(3, 5);
             this.gbRight.Name = "gbRight";
@@ -414,6 +405,16 @@
             this.gbRight.TabIndex = 5;
             this.gbRight.TabStop = false;
             this.gbRight.Text = "存储过程脚本";
+            // 
+            // txtScript
+            // 
+            this.txtScript.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtScript.Location = new System.Drawing.Point(3, 19);
+            this.txtScript.Name = "txtScript";
+            this.txtScript.ReadOnly = true;
+            this.txtScript.Size = new System.Drawing.Size(344, 523);
+            this.txtScript.TabIndex = 0;
+            this.txtScript.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtScript_KeyDown);
             // 
             // panelLeft
             // 
@@ -465,84 +466,7 @@
             this.tsmiRemoveIgrone.Text = "移除忽略";
             this.tsmiRemoveIgrone.Click += new System.EventHandler(this.tsmiRemoveIgrone_Click);
             // 
-            // dgvColumnInfo
-            // 
-            this.dgvColumnInfo.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.dgvColumnInfo.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.dgvColumnInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvColumnInfo.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colColumnName,
-            this.colColumnDataType,
-            this.colColumnMaxLength,
-            this.colColumnNullAble,
-            this.colColumnIdentity,
-            this.colColumnDefault,
-            this.colColumnPrimary,
-            this.colColumnDescription});
-            this.dgvColumnInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvColumnInfo.Location = new System.Drawing.Point(3, 19);
-            this.dgvColumnInfo.Name = "dgvColumnInfo";
-            this.dgvColumnInfo.RowTemplate.Height = 23;
-            this.dgvColumnInfo.Size = new System.Drawing.Size(344, 523);
-            this.dgvColumnInfo.TabIndex = 0;
-            // 
-            // colColumnName
-            // 
-            this.colColumnName.DataPropertyName = "column_name";
-            this.colColumnName.Frozen = true;
-            this.colColumnName.HeaderText = "列名";
-            this.colColumnName.Name = "colColumnName";
-            this.colColumnName.ReadOnly = true;
-            // 
-            // colColumnDataType
-            // 
-            this.colColumnDataType.DataPropertyName = "data_type";
-            this.colColumnDataType.HeaderText = "数据类型";
-            this.colColumnDataType.Name = "colColumnDataType";
-            this.colColumnDataType.ReadOnly = true;
-            // 
-            // colColumnMaxLength
-            // 
-            this.colColumnMaxLength.DataPropertyName = "max_length";
-            this.colColumnMaxLength.HeaderText = "最大长度";
-            this.colColumnMaxLength.Name = "colColumnMaxLength";
-            this.colColumnMaxLength.ReadOnly = true;
-            // 
-            // colColumnNullAble
-            // 
-            this.colColumnNullAble.DataPropertyName = "null_able";
-            this.colColumnNullAble.HeaderText = "是否可为空";
-            this.colColumnNullAble.Name = "colColumnNullAble";
-            this.colColumnNullAble.ReadOnly = true;
-            // 
-            // colColumnIdentity
-            // 
-            this.colColumnIdentity.DataPropertyName = "is_identity";
-            this.colColumnIdentity.HeaderText = "是否标识列";
-            this.colColumnIdentity.Name = "colColumnIdentity";
-            this.colColumnIdentity.ReadOnly = true;
-            // 
-            // colColumnDefault
-            // 
-            this.colColumnDefault.DataPropertyName = "default";
-            this.colColumnDefault.HeaderText = "默认值";
-            this.colColumnDefault.Name = "colColumnDefault";
-            this.colColumnDefault.ReadOnly = true;
-            // 
-            // colColumnPrimary
-            // 
-            this.colColumnPrimary.DataPropertyName = "is_primary";
-            this.colColumnPrimary.HeaderText = "是否主键";
-            this.colColumnPrimary.Name = "colColumnPrimary";
-            this.colColumnPrimary.ReadOnly = true;
-            // 
-            // colColumnDescription
-            // 
-            this.colColumnDescription.DataPropertyName = "description";
-            this.colColumnDescription.HeaderText = "说明";
-            this.colColumnDescription.Name = "colColumnDescription";
-            // 
-            // Main
+            // FormQueryProcedure
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -551,8 +475,8 @@
             this.Controls.Add(this.panelLeft);
             this.Controls.Add(this.statusStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Main";
-            this.Text = "Main";
+            this.Name = "FormQueryProcedure";
+            this.Text = "查询存储过程";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.Load += new System.EventHandler(this.Main_Load);
             this.panelTop.ResumeLayout(false);
@@ -569,7 +493,6 @@
             this.panelRight.ResumeLayout(false);
             this.cmsGrid.ResumeLayout(false);
             this.cmsGridIgrone.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvColumnInfo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -598,6 +521,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox gbLeft;
         private System.Windows.Forms.GroupBox gbRight;
+        private ScintillaNET.Scintilla txtScript;
         private System.Windows.Forms.Panel panelLeft;
         private System.Windows.Forms.Panel panelRight;
         private System.Windows.Forms.Panel panelGrid;
@@ -617,14 +541,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colIgroneID;
         private System.Windows.Forms.DataGridViewTextBoxColumn colContent;
         private System.Windows.Forms.DataGridViewTextBoxColumn colType;
-        private System.Windows.Forms.DataGridView dgvColumnInfo;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnDataType;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnMaxLength;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnNullAble;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnIdentity;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnDefault;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnPrimary;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnDescription;
     }
 }

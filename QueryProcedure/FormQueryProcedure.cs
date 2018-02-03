@@ -10,9 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QueryTable
+namespace QueryProcedure
 {
-    public partial class Main : Form
+    public partial class FormQueryProcedure : Form
     {
 
         #region fields
@@ -51,7 +51,7 @@ namespace QueryTable
 
         #region constructor
 
-        public Main(SqlConnectionStringBuilder conStringBuilder)
+        public FormQueryProcedure(SqlConnectionStringBuilder conStringBuilder)
         {
             this.StartPosition = FormStartPosition.CenterScreen;
             this.WindowState = FormWindowState.Maximized;

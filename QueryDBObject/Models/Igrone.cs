@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QueryTable.Models
+namespace QueryDBObject.Models
 {
     public class Igrone
     {

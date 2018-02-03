@@ -1,4 +1,4 @@
-﻿namespace QueryTable
+﻿namespace QueryDBObject
 {
     partial class FindWindow
     {

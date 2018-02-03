@@ -1,6 +1,6 @@
-﻿namespace QueryProcedure
+﻿namespace QueryDBObject
 {
-    partial class Main
+    partial class FormQueryTable
     {
         /// <summary>
         /// Required designer variable.
@@ -29,21 +29,27 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormQueryTable));
             this.panelTop = new System.Windows.Forms.Panel();
             this.gbIgrone = new System.Windows.Forms.GroupBox();
             this.dgvIgrone = new System.Windows.Forms.DataGridView();
+            this.colIgroneID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colContent = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cboSortType = new System.Windows.Forms.ComboBox();
             this.cboSort = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.txtName = new System.Windows.Forms.TextBox();
+            this.txtColumnNameKeyWord = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnQuery = new System.Windows.Forms.Button();
-            this.txtKeyWord = new System.Windows.Forms.TextBox();
+            this.txtNameKeyWord = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.grid = new System.Windows.Forms.DataGridView();
+            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colObjectType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCreateDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colModefiyDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tssLblServer = new System.Windows.Forms.ToolStripStatusLabel();
@@ -59,17 +65,21 @@
             this.gbLeft = new System.Windows.Forms.GroupBox();
             this.panelGrid = new System.Windows.Forms.Panel();
             this.gbRight = new System.Windows.Forms.GroupBox();
-            this.txtScript = new ScintillaNET.Scintilla();
+            this.dgvColumnInfo = new System.Windows.Forms.DataGridView();
+            this.colColumnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colColumnDataType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colColumnMaxLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colColumnNullAble = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colColumnIdentity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colColumnDefault = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colColumnPrimary = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colColumnDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelLeft = new System.Windows.Forms.Panel();
             this.panelRight = new System.Windows.Forms.Panel();
             this.cmsGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiAddIgrone = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsGridIgrone = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiRemoveIgrone = new System.Windows.Forms.ToolStripMenuItem();
-            this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colCreateDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colModefiyDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelTop.SuspendLayout();
             this.gbIgrone.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvIgrone)).BeginInit();
@@ -78,6 +88,7 @@
             this.gbLeft.SuspendLayout();
             this.panelGrid.SuspendLayout();
             this.gbRight.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvColumnInfo)).BeginInit();
             this.panelLeft.SuspendLayout();
             this.panelRight.SuspendLayout();
             this.cmsGrid.SuspendLayout();
@@ -90,10 +101,10 @@
             this.panelTop.Controls.Add(this.cboSortType);
             this.panelTop.Controls.Add(this.cboSort);
             this.panelTop.Controls.Add(this.label4);
-            this.panelTop.Controls.Add(this.txtName);
+            this.panelTop.Controls.Add(this.txtColumnNameKeyWord);
             this.panelTop.Controls.Add(this.label2);
             this.panelTop.Controls.Add(this.btnQuery);
-            this.panelTop.Controls.Add(this.txtKeyWord);
+            this.panelTop.Controls.Add(this.txtNameKeyWord);
             this.panelTop.Controls.Add(this.label1);
             this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTop.Location = new System.Drawing.Point(5, 19);
@@ -114,23 +125,30 @@
             // 
             // dgvIgrone
             // 
-            this.dgvIgrone.AllowUserToAddRows = false;
             this.dgvIgrone.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgvIgrone.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvIgrone.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvIgrone.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colIgroneID,
             this.colContent,
             this.colType});
             this.dgvIgrone.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvIgrone.Location = new System.Drawing.Point(3, 17);
             this.dgvIgrone.MultiSelect = false;
             this.dgvIgrone.Name = "dgvIgrone";
-            this.dgvIgrone.ReadOnly = true;
             this.dgvIgrone.RowTemplate.Height = 23;
             this.dgvIgrone.Size = new System.Drawing.Size(598, 109);
             this.dgvIgrone.TabIndex = 0;
             this.dgvIgrone.CellContextMenuStripNeeded += new System.Windows.Forms.DataGridViewCellContextMenuStripNeededEventHandler(this.grid_CellContextMenuStripNeeded);
+            this.dgvIgrone.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvIgrone_CellEndEdit);
             this.dgvIgrone.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.grid_RowPostPaint);
+            // 
+            // colIgroneID
+            // 
+            this.colIgroneID.DataPropertyName = "ID";
+            this.colIgroneID.HeaderText = "ID";
+            this.colIgroneID.Name = "colIgroneID";
+            this.colIgroneID.Visible = false;
             // 
             // colContent
             // 
@@ -138,7 +156,6 @@
             this.colContent.FillWeight = 330F;
             this.colContent.HeaderText = "内容";
             this.colContent.Name = "colContent";
-            this.colContent.ReadOnly = true;
             this.colContent.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.colContent.Width = 330;
             // 
@@ -147,7 +164,6 @@
             this.colType.DataPropertyName = "IgroneType";
             this.colType.HeaderText = "类型";
             this.colType.Name = "colType";
-            this.colType.ReadOnly = true;
             // 
             // cboSortType
             // 
@@ -176,22 +192,22 @@
             this.label4.TabIndex = 8;
             this.label4.Text = "排序方式";
             // 
-            // txtName
+            // txtColumnNameKeyWord
             // 
-            this.txtName.Location = new System.Drawing.Point(321, 8);
-            this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(160, 21);
-            this.txtName.TabIndex = 5;
-            this.txtName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+            this.txtColumnNameKeyWord.Location = new System.Drawing.Point(321, 8);
+            this.txtColumnNameKeyWord.Name = "txtColumnNameKeyWord";
+            this.txtColumnNameKeyWord.Size = new System.Drawing.Size(160, 21);
+            this.txtColumnNameKeyWord.TabIndex = 5;
+            this.txtColumnNameKeyWord.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(252, 12);
+            this.label2.Location = new System.Drawing.Point(277, 13);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(65, 12);
+            this.label2.Size = new System.Drawing.Size(29, 12);
             this.label2.TabIndex = 4;
-            this.label2.Text = "存储过程名";
+            this.label2.Text = "列名";
             // 
             // btnQuery
             // 
@@ -203,22 +219,22 @@
             this.btnQuery.UseVisualStyleBackColor = true;
             this.btnQuery.Click += new System.EventHandler(this.btnQuery_Click);
             // 
-            // txtKeyWord
+            // txtNameKeyWord
             // 
-            this.txtKeyWord.Location = new System.Drawing.Point(81, 8);
-            this.txtKeyWord.Name = "txtKeyWord";
-            this.txtKeyWord.Size = new System.Drawing.Size(160, 21);
-            this.txtKeyWord.TabIndex = 2;
-            this.txtKeyWord.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+            this.txtNameKeyWord.Location = new System.Drawing.Point(81, 8);
+            this.txtNameKeyWord.Name = "txtNameKeyWord";
+            this.txtNameKeyWord.Size = new System.Drawing.Size(160, 21);
+            this.txtNameKeyWord.TabIndex = 2;
+            this.txtNameKeyWord.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 12);
+            this.label1.Location = new System.Drawing.Point(12, 13);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 12);
+            this.label1.Size = new System.Drawing.Size(41, 12);
             this.label1.TabIndex = 1;
-            this.label1.Text = "查询关键字";
+            this.label1.Text = "对象名";
             // 
             // grid
             // 
@@ -229,6 +245,7 @@
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colId,
             this.colName,
+            this.colObjectType,
             this.colCreateDate,
             this.colModefiyDate});
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -244,6 +261,45 @@
             this.grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellDoubleClick);
             this.grid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.grid_CellFormatting);
             this.grid.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.grid_RowPostPaint);
+            // 
+            // colId
+            // 
+            this.colId.DataPropertyName = "ObjectID";
+            this.colId.HeaderText = "ID";
+            this.colId.Name = "colId";
+            this.colId.ReadOnly = true;
+            this.colId.Visible = false;
+            // 
+            // colName
+            // 
+            this.colName.DataPropertyName = "Name";
+            this.colName.HeaderText = "名称";
+            this.colName.Name = "colName";
+            this.colName.ReadOnly = true;
+            this.colName.Width = 290;
+            // 
+            // colObjectType
+            // 
+            this.colObjectType.DataPropertyName = "ObjectType";
+            this.colObjectType.HeaderText = "类型";
+            this.colObjectType.Name = "colObjectType";
+            this.colObjectType.ReadOnly = true;
+            // 
+            // colCreateDate
+            // 
+            this.colCreateDate.DataPropertyName = "CreateDate";
+            this.colCreateDate.HeaderText = "创建时间";
+            this.colCreateDate.Name = "colCreateDate";
+            this.colCreateDate.ReadOnly = true;
+            this.colCreateDate.Width = 150;
+            // 
+            // colModefiyDate
+            // 
+            this.colModefiyDate.DataPropertyName = "ModifyDate";
+            this.colModefiyDate.HeaderText = "修改时间";
+            this.colModefiyDate.Name = "colModefiyDate";
+            this.colModefiyDate.ReadOnly = true;
+            this.colModefiyDate.Width = 150;
             // 
             // statusStrip1
             // 
@@ -358,7 +414,7 @@
             // 
             // gbRight
             // 
-            this.gbRight.Controls.Add(this.txtScript);
+            this.gbRight.Controls.Add(this.dgvColumnInfo);
             this.gbRight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbRight.Location = new System.Drawing.Point(3, 5);
             this.gbRight.Name = "gbRight";
@@ -368,15 +424,85 @@
             this.gbRight.TabStop = false;
             this.gbRight.Text = "存储过程脚本";
             // 
-            // txtScript
+            // dgvColumnInfo
             // 
-            this.txtScript.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtScript.Location = new System.Drawing.Point(3, 19);
-            this.txtScript.Name = "txtScript";
-            this.txtScript.ReadOnly = true;
-            this.txtScript.Size = new System.Drawing.Size(344, 523);
-            this.txtScript.TabIndex = 0;
-            this.txtScript.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtScript_KeyDown);
+            this.dgvColumnInfo.AllowUserToAddRows = false;
+            this.dgvColumnInfo.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dgvColumnInfo.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dgvColumnInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvColumnInfo.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colColumnName,
+            this.colColumnDataType,
+            this.colColumnMaxLength,
+            this.colColumnNullAble,
+            this.colColumnIdentity,
+            this.colColumnDefault,
+            this.colColumnPrimary,
+            this.colColumnDescription});
+            this.dgvColumnInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvColumnInfo.Location = new System.Drawing.Point(3, 19);
+            this.dgvColumnInfo.Name = "dgvColumnInfo";
+            this.dgvColumnInfo.RowTemplate.Height = 23;
+            this.dgvColumnInfo.Size = new System.Drawing.Size(344, 523);
+            this.dgvColumnInfo.TabIndex = 0;
+            this.dgvColumnInfo.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvColumnInfo_CellFormatting);
+            this.dgvColumnInfo.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.grid_RowPostPaint);
+            // 
+            // colColumnName
+            // 
+            this.colColumnName.DataPropertyName = "Name";
+            this.colColumnName.Frozen = true;
+            this.colColumnName.HeaderText = "列名";
+            this.colColumnName.Name = "colColumnName";
+            this.colColumnName.ReadOnly = true;
+            // 
+            // colColumnDataType
+            // 
+            this.colColumnDataType.DataPropertyName = "DataType";
+            this.colColumnDataType.HeaderText = "数据类型";
+            this.colColumnDataType.Name = "colColumnDataType";
+            this.colColumnDataType.ReadOnly = true;
+            // 
+            // colColumnMaxLength
+            // 
+            this.colColumnMaxLength.DataPropertyName = "MaxLength";
+            this.colColumnMaxLength.HeaderText = "最大长度";
+            this.colColumnMaxLength.Name = "colColumnMaxLength";
+            this.colColumnMaxLength.ReadOnly = true;
+            // 
+            // colColumnNullAble
+            // 
+            this.colColumnNullAble.DataPropertyName = "Nullable";
+            this.colColumnNullAble.HeaderText = "是否可为空";
+            this.colColumnNullAble.Name = "colColumnNullAble";
+            this.colColumnNullAble.ReadOnly = true;
+            // 
+            // colColumnIdentity
+            // 
+            this.colColumnIdentity.DataPropertyName = "Identity";
+            this.colColumnIdentity.HeaderText = "自增";
+            this.colColumnIdentity.Name = "colColumnIdentity";
+            this.colColumnIdentity.ReadOnly = true;
+            // 
+            // colColumnDefault
+            // 
+            this.colColumnDefault.DataPropertyName = "Default";
+            this.colColumnDefault.HeaderText = "默认值";
+            this.colColumnDefault.Name = "colColumnDefault";
+            this.colColumnDefault.ReadOnly = true;
+            // 
+            // colColumnPrimary
+            // 
+            this.colColumnPrimary.DataPropertyName = "IsPrimary";
+            this.colColumnPrimary.HeaderText = "是否主键";
+            this.colColumnPrimary.Name = "colColumnPrimary";
+            this.colColumnPrimary.ReadOnly = true;
+            // 
+            // colColumnDescription
+            // 
+            this.colColumnDescription.DataPropertyName = "Description";
+            this.colColumnDescription.HeaderText = "说明";
+            this.colColumnDescription.Name = "colColumnDescription";
             // 
             // panelLeft
             // 
@@ -428,39 +554,7 @@
             this.tsmiRemoveIgrone.Text = "移除忽略";
             this.tsmiRemoveIgrone.Click += new System.EventHandler(this.tsmiRemoveIgrone_Click);
             // 
-            // colId
-            // 
-            this.colId.DataPropertyName = "object_id";
-            this.colId.HeaderText = "ID";
-            this.colId.Name = "colId";
-            this.colId.ReadOnly = true;
-            this.colId.Visible = false;
-            // 
-            // colName
-            // 
-            this.colName.DataPropertyName = "name";
-            this.colName.HeaderText = "名称";
-            this.colName.Name = "colName";
-            this.colName.ReadOnly = true;
-            this.colName.Width = 330;
-            // 
-            // colCreateDate
-            // 
-            this.colCreateDate.DataPropertyName = "create_date";
-            this.colCreateDate.HeaderText = "创建时间";
-            this.colCreateDate.Name = "colCreateDate";
-            this.colCreateDate.ReadOnly = true;
-            this.colCreateDate.Width = 150;
-            // 
-            // colModefiyDate
-            // 
-            this.colModefiyDate.DataPropertyName = "modify_date";
-            this.colModefiyDate.HeaderText = "修改时间";
-            this.colModefiyDate.Name = "colModefiyDate";
-            this.colModefiyDate.ReadOnly = true;
-            this.colModefiyDate.Width = 150;
-            // 
-            // Main
+            // FormQueryTable
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -469,10 +563,10 @@
             this.Controls.Add(this.panelLeft);
             this.Controls.Add(this.statusStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Main";
-            this.Text = "Main";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
-            this.Load += new System.EventHandler(this.Main_Load);
+            this.Name = "FormQueryTable";
+            this.Text = "查询表/视图";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormQueryTable_FormClosed);
+            this.Load += new System.EventHandler(this.FormQueryTable_Load);
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
             this.gbIgrone.ResumeLayout(false);
@@ -483,6 +577,7 @@
             this.gbLeft.ResumeLayout(false);
             this.panelGrid.ResumeLayout(false);
             this.gbRight.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvColumnInfo)).EndInit();
             this.panelLeft.ResumeLayout(false);
             this.panelRight.ResumeLayout(false);
             this.cmsGrid.ResumeLayout(false);
@@ -497,7 +592,7 @@
         private System.Windows.Forms.Panel panelTop;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnQuery;
-        private System.Windows.Forms.TextBox txtKeyWord;
+        private System.Windows.Forms.TextBox txtNameKeyWord;
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tssLblServer;
@@ -511,11 +606,10 @@
         private System.Windows.Forms.ToolStripStatusLabel tssLblRowCount;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
-        private System.Windows.Forms.TextBox txtName;
+        private System.Windows.Forms.TextBox txtColumnNameKeyWord;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox gbLeft;
         private System.Windows.Forms.GroupBox gbRight;
-        private ScintillaNET.Scintilla txtScript;
         private System.Windows.Forms.Panel panelLeft;
         private System.Windows.Forms.Panel panelRight;
         private System.Windows.Forms.Panel panelGrid;
@@ -528,11 +622,22 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiAddIgrone;
         private System.Windows.Forms.ContextMenuStrip cmsGridIgrone;
         private System.Windows.Forms.ToolStripMenuItem tsmiRemoveIgrone;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colIgroneID;
         private System.Windows.Forms.DataGridViewTextBoxColumn colContent;
         private System.Windows.Forms.DataGridViewTextBoxColumn colType;
+        private System.Windows.Forms.DataGridView dgvColumnInfo;
         private System.Windows.Forms.DataGridViewTextBoxColumn colId;
         private System.Windows.Forms.DataGridViewTextBoxColumn colName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colObjectType;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCreateDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn colModefiyDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnDataType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnMaxLength;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnNullAble;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnIdentity;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnDefault;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnPrimary;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colColumnDescription;
     }
 }

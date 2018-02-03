@@ -8,10 +8,11 @@ namespace QueryTable.Models
 {
     public class DBObject
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public DateTime create_date { get; set; }
-        public DateTime modify_date { get; set; }
-        public string script { get; set; }
+        public int ObjectID { get; set; }
+        public string Name { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime ModifyDate { get; set; }
+        public string ObjectType { get; set; }
+        public IEnumerable<DBColumn> Columns { get; set; }
     }
 }

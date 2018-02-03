@@ -52,7 +52,7 @@ namespace QueryTable
                     if (result > 0)
                     {
                         WirteFle();
-                        var mainFrom = new Main(conBuilder);
+                        var mainFrom = new FormQueryTable(conBuilder);
                         mainFrom.LoginForm = this;
                         mainFrom.StartPosition = FormStartPosition.CenterScreen;
                         mainFrom.Show();

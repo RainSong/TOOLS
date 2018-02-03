@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace QueryProcedure
+namespace QueryDBObject
 {
     public partial class LoginServer : Form
     {
@@ -52,7 +52,7 @@ namespace QueryProcedure
                     if (result > 0)
                     {
                         WirteFle();
-                        var mainFrom = new FormQueryProcedure(conBuilder);
+                        var mainFrom = new Main(conBuilder);
                         mainFrom.LoginForm = this;
                         mainFrom.StartPosition = FormStartPosition.CenterScreen;
                         mainFrom.Show();

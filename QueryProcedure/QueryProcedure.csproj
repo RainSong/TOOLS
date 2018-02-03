@@ -77,12 +77,6 @@
       <DependentUpon>FindWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Logger.cs" />
-    <Compile Include="FormMask.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormMask.Designer.cs">
-      <DependentUpon>FormMask.cs</DependentUpon>
-    </Compile>
     <Compile Include="Models\DBObjects.cs" />
     <Compile Include="Models\Igrone.cs" />
     <Compile Include="LoginServer.cs">
@@ -91,11 +85,11 @@
     <Compile Include="LoginServer.Designer.cs">
       <DependentUpon>LoginServer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Main.cs">
+    <Compile Include="FormQueryProcedure.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
+    <Compile Include="FormQueryProcedure.Designer.cs">
+      <DependentUpon>FormQueryProcedure.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,14 +97,11 @@
     <EmbeddedResource Include="FindWindow.resx">
       <DependentUpon>FindWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormMask.resx">
-      <DependentUpon>FormMask.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="LoginServer.resx">
       <DependentUpon>LoginServer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
+    <EmbeddedResource Include="FormQueryProcedure.resx">
+      <DependentUpon>FormQueryProcedure.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
