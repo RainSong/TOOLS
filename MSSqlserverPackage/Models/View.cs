@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MSSqlserverPackage.Models
 {
-    public class View : DBObject
+    public class View : DBObject, IQueryableObject
     {
         public IEnumerable<Column> Columns { get; set; }
         public IEnumerable<Index> Indexes { get; set; }

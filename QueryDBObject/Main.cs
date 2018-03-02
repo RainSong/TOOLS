@@ -7,12 +7,21 @@ namespace QueryDBObject
     public partial class Main : Form
     {
         public LoginServer LoginForm { get; set; }
+        public int DataBaseID { get; set; }
         private SqlConnectionStringBuilder sqlConnectionStringBuilder;
         public Main(SqlConnectionStringBuilder sqlConnectionStringBuilder)
         {
             InitializeComponent();
             this.sqlConnectionStringBuilder = sqlConnectionStringBuilder;
+        }
 
+        private void Main_Load(object sender, EventArgs e)
+        {
+            InitForm();
+        }
+
+        private void InitForm()
+        {
             var tp = new TabPage
             {
                 Name = "tpQP",
@@ -32,29 +41,40 @@ namespace QueryDBObject
                 Name = "tpT",
                 Text = "查询表/视图"
             };
-            var qt = new FormQueryTable(this.sqlConnectionStringBuilder);
-            qt.FormBorderStyle = FormBorderStyle.None;
-            qt.Dock = DockStyle.Fill;
-            qt.TopLevel = false;
+            var qt = new FormQueryTable(this.sqlConnectionStringBuilder)
+            {
+                FormBorderStyle = FormBorderStyle.None,
+                Dock = DockStyle.Fill,
+                TopLevel = false,
+                DataBaseID = this.DataBaseID
+            };
             tp.Controls.Add(qt);
             this.tabControl1.TabPages.Add(tp);
             qt.Show();
-
-        }
-
-        private void Main_Load(object sender, EventArgs e)
-        {
-            //this.tpQueryProcedure.Text = "查询存储过程";
-            //this.tpQueryTable.Text = "查询表";
-        }
-
-        private void InitForm()
-        {
         }
 
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
-            
+            var dialogResult = MessageBox.Show("是否返回重新连接服务器？\r\n是：重新连接，否：退出程序！", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult == DialogResult.Yes)
+            {
+
+                if (this.LoginForm != null)
+                {
+                    this.LoginForm.Show();
+                }
+                else
+                {
+                    var lf = new LoginServer();
+                    lf.StartPosition = FormStartPosition.CenterScreen;
+                    lf.Show();
+                    this.Close();
+                }
+            }
+            else
+            {
+                Application.Exit();
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MSSqlserverPackage.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +12,7 @@ namespace MSSqlserverPackage.Common
             IEnumerable<Schema> schemas = CacheManager.GetValue("Schemas") as IEnumerable<Schema>;
             if (schemas == null || !schemas.Any())
             {
-                schemas = SqlHelper.GetSchemas();
+                schemas = Common.SqlHelper.GetSchemas();
                 CacheManager.SetValue("Schemas", schemas);
             }
             return schemas;
@@ -75,6 +76,21 @@ namespace MSSqlserverPackage.Common
             }
             return columns;
         }
+
+        public static IEnumerable<Parameter> GetParameters()
+        {
+            var parameters = CacheManager.GetValue("Parameters") as List<Parameter>;
+            if (parameters == null)
+            {
+                parameters = Common.SqlHelper.GetParameters();
+                if (parameters != null)
+                {
+                    CacheManager.SetValue("Parameters", parameters);
+                }
+            }
+            return parameters;
+        }
+
         public static IEnumerable<DBObject> GetObjects()
         {
             var objects = CacheManager.GetValue("Objects") as List<DBObject>;
@@ -87,6 +103,23 @@ namespace MSSqlserverPackage.Common
                     objects.ForEach(o =>
                     {
                         o.Schema = schemas.FirstOrDefault(s => s.ID == o.SchemaID);
+                        var objType = string.IsNullOrEmpty(o.TypeName) ? string.Empty : o.TypeName.Trim();
+                        switch (o.TypeName)
+                        {
+                            case ("U"):
+                                o.ObjectType = ConstValue.ObjectType.Table;
+                                break;
+                            case ("V"):
+                                o.ObjectType = ConstValue.ObjectType.View;
+                                break;
+                            case ("P"):
+                                o.ObjectType = ConstValue.ObjectType.Procedure;
+                                break;
+                            default:
+                                o.ObjectType = ConstValue.ObjectType.Unknown;
+                                break;
+
+                        }
                     });
                     CacheManager.SetValue("Objects", objects);
                 }
@@ -96,26 +129,28 @@ namespace MSSqlserverPackage.Common
         public static IEnumerable<Table> GetTables()
         {
             var tables = CacheManager.GetValue("Tables") as List<Table>;
-            var columns = GetColumns() ?? new List<Column>();
-            var pks = GetPrimaryKeys() ?? new List<PrimaryKey>();
             if (tables == null || !tables.Any())
             {
                 var objects = GetObjects();
                 if (objects != null)
                 {
                     var indexes = GetIndexes();
+                    var pks = GetPrimaryKeys() ?? new List<PrimaryKey>();
+                    var columns = GetColumns() ?? new List<Column>();
                     tables = (from o in objects
-                              where !string.IsNullOrEmpty(o.ObjectType) && o.ObjectType.Trim().Equals("U", System.StringComparison.InvariantCultureIgnoreCase)
+                              where o.ObjectType == ConstValue.ObjectType.Table
                               select new Table
                               {
                                   ObjectID = o.ObjectID,
                                   Name = o.Name,
                                   Schema = o.Schema,
+                                  ObjectType = o.ObjectType,
                                   Columns = columns.Where(c => c.ObjectID == o.ObjectID).AsEnumerable(),
                                   PrimaryKey = pks.FirstOrDefault(p => p.ObjectID == o.ObjectID),
-                                  ObjectType = o.ObjectType,
+                                  TypeName = o.TypeName,
                                   Indexes = indexes.Where(i => i.ObjectID == o.ObjectID).AsEnumerable()
                               }).ToList();
+
                     var fks = GetReferenceKeys(tables);
                     tables.ForEach(t =>
                     {
@@ -136,12 +171,13 @@ namespace MSSqlserverPackage.Common
                 var objects = GetObjects();
                 var indexes = GetIndexes();
                 views = (from o in objects
-                         where !string.IsNullOrEmpty(o.ObjectType) && o.ObjectType.Trim().Equals("V", System.StringComparison.InvariantCultureIgnoreCase)
+                         where !string.IsNullOrEmpty(o.TypeName) && o.TypeName.Trim().Equals("V", System.StringComparison.InvariantCultureIgnoreCase)
                          select new View
                          {
                              ObjectID = o.ObjectID,
                              Name = o.Name,
                              Schema = o.Schema,
+                             ObjectType = o.ObjectType,
                              Columns = columns.Where(c => c.ObjectID == o.ObjectID).AsEnumerable(),
                              Indexes = indexes == null ? null : indexes.Where(i => i.ObjectID == o.ObjectID).AsEnumerable()
                          }).ToList();
@@ -149,6 +185,33 @@ namespace MSSqlserverPackage.Common
             }
             return views;
         }
+
+        public static IEnumerable<Procedure> GetProcedures()
+        {
+            var procedures = CacheManager.GetValue("Procedures") as List<Procedure>;
+            if (procedures == null || !procedures.Any())
+            {
+                var objects = GetObjects();
+                var parameters = GetParameters();
+                if (parameters == null) parameters = new List<Parameter>();
+                if (objects != null)
+                {
+                    procedures = (from o in objects
+                                  where o.ObjectType == ConstValue.ObjectType.Procedure
+                                  select new Procedure
+                                  {
+                                      ObjectID = o.ObjectID,
+                                      TypeName = o.TypeName,
+                                      Name = o.Name,
+                                      ObjectType = ConstValue.ObjectType.Procedure,
+                                      Parameters = parameters.Where(p => p.ObjectID == o.ObjectID)
+                                  }).ToList();
+                    CacheManager.SetValue("Procedures", procedures);
+                }
+            }
+            return procedures;
+        }
+
         public static IEnumerable<PrimaryKey> GetPrimaryKeys()
         {
             var keys = CacheManager.GetValue("PrimaryKeys") as IEnumerable<PrimaryKey>;
@@ -164,6 +227,7 @@ namespace MSSqlserverPackage.Common
         }
         public static IEnumerable<ReferenceKey> GetReferenceKeys(IEnumerable<Table> tables)
         {
+            if (tables == null) throw new ArgumentNullException("tables不能为空");
             var keys = CacheManager.GetValue("ReferenceKeys") as List<ReferenceKey>;
             if (keys == null || !keys.Any())
             {

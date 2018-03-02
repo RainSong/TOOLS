@@ -125,7 +125,7 @@ namespace MSSqlserverPackage
             DataTable dt = null;
             try
             {
-                dt = Common.SqlHelper.GetTable(strCommandText);
+                dt = RainSong.Common.SqlHelper.GetTable(strCommandText);
             }
             catch (Exception ex)
             {

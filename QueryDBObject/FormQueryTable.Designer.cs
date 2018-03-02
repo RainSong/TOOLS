@@ -422,7 +422,7 @@
             this.gbRight.Size = new System.Drawing.Size(352, 547);
             this.gbRight.TabIndex = 5;
             this.gbRight.TabStop = false;
-            this.gbRight.Text = "存储过程脚本";
+            this.gbRight.Text = "列信息";
             // 
             // dgvColumnInfo
             // 
@@ -445,6 +445,7 @@
             this.dgvColumnInfo.RowTemplate.Height = 23;
             this.dgvColumnInfo.Size = new System.Drawing.Size(344, 523);
             this.dgvColumnInfo.TabIndex = 0;
+            this.dgvColumnInfo.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvColumnInfo_CellEndEdit);
             this.dgvColumnInfo.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvColumnInfo_CellFormatting);
             this.dgvColumnInfo.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.grid_RowPostPaint);
             // 
@@ -565,7 +566,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormQueryTable";
             this.Text = "查询表/视图";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormQueryTable_FormClosed);
             this.Load += new System.EventHandler(this.FormQueryTable_Load);
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();

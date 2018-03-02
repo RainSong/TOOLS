@@ -85,13 +85,13 @@ namespace MSSqlserverPackage
                  }
              };
             var result = (from o in objects
-                          orderby o.ObjectType, o.Name
+                          orderby o.TypeName, o.Name
                           select new
                           {
                               object_id = o.ObjectID,
                               name = o.Name,
-                              type = o.ObjectType,
-                              type_full_name = funcGetType(o.ObjectType),
+                              type = o.TypeName,
+                              type_full_name = funcGetType(o.TypeName),
                               type_desc = o.TypeDesc,
                               parent_id = o.ParentID,
                               create_date = o.CreateDate,
@@ -199,17 +199,31 @@ namespace MSSqlserverPackage
                     var tables = DataService.GetTables();
                     if (tables == null) return;
                     this.selectObject = tables.FirstOrDefault(o => o.ObjectID == objId);
+
+                    this.ToolStripMenuItemViewData.Visible =
+                        this.ToolStripMenuItemViewDesign.Visible =
+                        this.ToolStripMenuItemViewScript.Visible = true;
                 }
                 else if (type == "V")
                 {
                     var views = DataService.GetViews();
                     if (views == null) return;
                     this.selectObject = views.FirstOrDefault(o => o.ObjectID == objId);
+
+                    this.ToolStripMenuItemViewData.Visible =
+                        this.ToolStripMenuItemViewDesign.Visible =
+                        this.ToolStripMenuItemViewScript.Visible = true;
+                }
+                else if (type == "P")
+                {
+                    var procedures = DataService.GetProcedures();
+                    if (procedures == null) return;
+                    this.selectObject = procedures.FirstOrDefault(o => o.ObjectID == objId);
+
+                    this.ToolStripMenuItemViewDesign.Visible =
+                        this.ToolStripMenuItemViewScript.Visible = true;
                 }
                 this.contextMenuStrip1.Show(MousePosition.X, MousePosition.Y);
-                this.ToolStripMenuItemViewData.Visible =
-                    this.ToolStripMenuItemViewDesign.Visible =
-                    this.ToolStripMenuItemViewScript.Visible = true;
             }
         }
 

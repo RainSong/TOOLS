@@ -63,8 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\CacheManager.cs" />
+    <Compile Include="Common\ConstValue.cs" />
     <Compile Include="Common\DataService.cs" />
-    <Compile Include="Common\FieldAtrribute.cs" />
     <Compile Include="ConnectServer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,6 +80,10 @@
     <Compile Include="DataResultForm.Designer.cs">
       <DependentUpon>DataResultForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\IExecuteableObject.cs" />
+    <Compile Include="Models\IQueryableObject.cs" />
+    <Compile Include="Models\Parameter.cs" />
+    <Compile Include="Models\Procedure.cs" />
     <Compile Include="ObjectsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -172,6 +176,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RainSong.Common\RainSong.Common.csproj">
+      <Project>{4a07e580-6c16-4c81-84db-a459cb91b05a}</Project>
+      <Name>RainSong.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

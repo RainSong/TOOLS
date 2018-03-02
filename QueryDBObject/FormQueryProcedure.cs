@@ -90,11 +90,11 @@ namespace QueryDBObject
         private void btnQuery_Click(object sender, EventArgs e)
         {
             var keyWord = this.txtKeyWord.Text.Trim();
-            if (string.IsNullOrEmpty(keyWord))
-            {
-                Common.ShowMessage("请输入查询关键字");
-                return;
-            }
+            //if (string.IsNullOrEmpty(keyWord))
+            //{
+            //    MessageHelper.ShowMessage("请输入查询关键字");
+            //    return;
+            //}
             var nameKeyWord = this.txtName.Text.Trim();
             var notContainsKeyWord = string.Empty;// this.txtNotContains.Text.Trim();
             this.objects = GetObjects(keyWord, nameKeyWord, notContainsKeyWord);
@@ -106,28 +106,7 @@ namespace QueryDBObject
             //GetConnectInfo();
             ShowStipLabel();
         }
-        private void Main_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            var dialogResult = MessageBox.Show("是否返回重新连接服务器？\r\n是：重新连接，否：退出程序！", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (dialogResult == DialogResult.Yes)
-            {
-
-                if (this.LoginForm != null)
-                {
-                    this.LoginForm.Show();
-                }
-                else
-                {
-                    var lf = new LoginServer();
-                    lf.StartPosition = FormStartPosition.CenterScreen;
-                    lf.Show();
-                }
-            }
-            else
-            {
-                Application.Exit();
-            }
-        }
+        
         /// <summary>
         /// 在行标头中添加编号
         /// </summary>
@@ -177,7 +156,7 @@ namespace QueryDBObject
                     }
                     catch (Exception ex)
                     {
-                        Common.ShowMessage(ex.Message, "Error");
+                        MessageHelper.ShowMessage(ex.Message, "Error");
                         Logger.Error(string.Format("查询脚存储过程{0}本失败", obj.script), ex);
                         return;
                     }
@@ -338,7 +317,8 @@ namespace QueryDBObject
             try
             {
                 IDictionary dic = new Dictionary<object, object>();
-                var list = SqlHelper.ExecuteQuery<Models.DBProcedure>(this.connectionString, sqlComment.ToString(), out dic, paras.ToArray());
+                var sqlHelper = new Common.SqlHelper();
+                var list = sqlHelper.ExecuteQuery<Models.DBProcedure>(this.connectionString, sqlComment.ToString(), out dic, paras.ToArray());
                 this.rowCount = list.Count.ToString();
 
                 var et = (long)dic["ExecutionTime"];
@@ -349,7 +329,7 @@ namespace QueryDBObject
             }
             catch (Exception ex)
             {
-                Common.ShowMessage("查询失败：" + ex.Message, "Error");
+                MessageHelper.ShowMessage("查询失败：" + ex.Message, "Error");
                 Logger.Error("根据关键字查询存储过程事变", ex);
             }
             return new List<Models.DBProcedure>();
@@ -472,7 +452,8 @@ namespace QueryDBObject
                     SqlDbType = SqlDbType.VarChar,
                     Value = prodecureName
                 };
-                return SqlHelper.ExecuteQuery(this.connectionString, sqlCommand, CommandType.Text, paraObjName);
+                var sqlHelper = new Common.SqlHelper();
+                return sqlHelper.ExecuteQuery(this.connectionString, sqlCommand, CommandType.Text, paraObjName);
             }
             catch (Exception ex)
             {

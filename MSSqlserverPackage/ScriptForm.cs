@@ -25,9 +25,19 @@ namespace MSSqlserverPackage
         public string BuildScript()
         {
             if (this.dbObject == null) return null;
-            if (this.ObjectType.Equals("TABLE"))
+            if (this.dbObject.ObjectType == Common.ConstValue.ObjectType.Table)
             {
                 return BuildTableScript(this.dbObject as Table);
+            }
+            var types = new Common.ConstValue.ObjectType[] 
+            {
+                Common.ConstValue.ObjectType.View,
+                Common.ConstValue.ObjectType.Function,
+                Common.ConstValue.ObjectType.Procedure
+            };
+            if (types.Contains(this.dbObject.ObjectType))
+            {
+                return GetScript();
             }
             return string.Empty;
         }
@@ -167,7 +177,7 @@ namespace MSSqlserverPackage
                                         " REFERENCES [{4}].[{5}]([{6}])" +
                                         "\r\nGO", table.Schema.Name,
                                         table.Name,
-                                        key.Name, 
+                                        key.Name,
                                         keyColumn.Name,
                                         key.ReferenceObject.Schema.Name,
                                         key.ReferenceObject.Name,
@@ -178,5 +188,9 @@ namespace MSSqlserverPackage
             return stringBuild.ToString();
         }
 
+        private string GetScript()
+        {
+            return Common.SqlHelper.ExecuteSqlHelpText(this.dbObject.Name);
+        }
     }
 }

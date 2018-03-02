@@ -26,6 +26,14 @@ namespace QueryDBObject
         private void LoginServer_Load(object sender, EventArgs e)
         {
             ReadFile();
+            try
+            {
+                Common.DataService.InitSqliteDataBase();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("初始化数据库失败", ex);
+            }
         }
 
         private void cboAuthType_SelectedIndexChanged(object sender, EventArgs e)
@@ -48,25 +56,39 @@ namespace QueryDBObject
                 {
                     var conBuilder = BuildConnection();
                     var sqlComment = "select 1 as value from sys.databases";
-                    var result = SqlHelper.ExecuteScalar<int>(conBuilder.ToString(), sqlComment);
+                    var sqlHelper = new Common.SqlHelper();
+                    var result = sqlHelper.ExecuteScalar<int>(conBuilder.ToString(), sqlComment);
                     if (result > 0)
                     {
                         WirteFle();
+                        int dbId = 0;
+                        try
+                        {
+                            Common.DataService.SaveDataBase(conBuilder.DataSource, conBuilder.InitialCatalog);
+                            dbId = Common.DataService.GetDataBaseID(conBuilder.DataSource, conBuilder.InitialCatalog);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error("保存登录的数据库信息失败", ex);
+                        }
+
                         var mainFrom = new Main(conBuilder);
                         mainFrom.LoginForm = this;
                         mainFrom.StartPosition = FormStartPosition.CenterScreen;
+                        mainFrom.DataBaseID = dbId;
                         mainFrom.Show();
+                        
                         this.Hide();
                     }
                     else
                     {
-                        Common.ShowMessage("连接数据库失败", "Waring");
+                        MessageHelper.ShowMessage("连接数据库失败", "Waring");
                     }
                 }
                 catch (Exception ex)
                 {
                     Logger.Error("读取数据库信息失败", ex);
-                    Common.ShowMessage(ex.Message, "Error");
+                    MessageHelper.ShowMessage(ex.Message, "Error");
                 }
             }
         }
@@ -79,16 +101,17 @@ namespace QueryDBObject
                 {
                     var conBuilder = BuildConnection();
                     var sqlComment = "select name as txt,name as value from sys.databases";
-                    var dtDbs = SqlHelper.ExecuteQuery(conBuilder.ToString(), sqlComment);
+                    var sqlHelper = new Common.SqlHelper();
+                    var dtDbs = sqlHelper.ExecuteQuery(conBuilder.ToString(), sqlComment);
                     this.cboDataBases.DataSource = dtDbs;
                     this.cboDataBases.DisplayMember = "text";
                     this.cboDataBases.ValueMember = "value";
-                    Common.ShowMessage("连接成功");
+                    MessageHelper.ShowMessage("连接成功");
                 }
                 catch (Exception ex)
                 {
                     Logger.Error("读取数据库信息失败", ex);
-                    Common.ShowMessage(ex.Message, "Error");
+                    MessageHelper.ShowMessage(ex.Message, "Error");
                 }
             }
         }
@@ -156,12 +179,12 @@ namespace QueryDBObject
             {
                 if (string.IsNullOrEmpty(this.txtUID.Text.Trim()))
                 {
-                    Common.ShowMessage("请输入用户名", "Waring");
+                    MessageHelper.ShowMessage("请输入用户名", "Waring");
                     return false;
                 }
                 if (string.IsNullOrEmpty(this.txtPassword.Text.Trim()))
                 {
-                    Common.ShowMessage("请输入密码", "Waring");
+                    MessageHelper.ShowMessage("请输入密码", "Waring");
                     return false;
                 }
             }

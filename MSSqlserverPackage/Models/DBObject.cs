@@ -1,6 +1,6 @@
-﻿using MSSqlserverPackage.Common;
+﻿using RainSong.Common;
 using System;
-
+using MSSqlserverPackage.Common;
 namespace MSSqlserverPackage.Models
 {
     public class DBObject
@@ -14,7 +14,7 @@ namespace MSSqlserverPackage.Models
         [Field("schema_id")]
         public int SchemaID { get; set; }
         [Field("type")]
-        public string ObjectType { get; set; }
+        public string TypeName { get; set; }
         [Field("type_desc")]
         public string TypeDesc { get; set; }
         [Field("create_date")]
@@ -25,5 +25,6 @@ namespace MSSqlserverPackage.Models
         public bool IsMsShipped { get; set; }
 
         public Schema Schema { get; set; }
+        public ConstValue.ObjectType ObjectType { get; set; }
     }
 }

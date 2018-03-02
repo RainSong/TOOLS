@@ -2,7 +2,7 @@
 
 namespace MSSqlserverPackage.Models
 {
-    public class Table : DBObject
+    public class Table : DBObject, IQueryableObject
     {
         public IEnumerable<Column> Columns { get; set; }
         public PrimaryKey PrimaryKey { get; set; }

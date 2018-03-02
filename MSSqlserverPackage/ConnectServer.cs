@@ -136,7 +136,7 @@ namespace MSSqlserverPackage
         private void BindDataToCombobox()
         {
             var sql = "SELECT name,dbid FROM sysdatabases";
-            var dtDataBases = SqlHelper.GetTable(this.ConnectionString, sql);
+            var dtDataBases = RainSong.Common.SqlHelper.GetTable(this.ConnectionString, sql);
             this.cbDataBase.DataSource = dtDataBases;
             this.cbDataBase.DisplayMember = "name";
             this.cbDataBase.ValueMember = "dbid";

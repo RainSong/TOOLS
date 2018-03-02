@@ -1,4 +1,4 @@
-﻿using MSSqlserverPackage.Common;
+﻿using RainSong.Common;
 
 namespace MSSqlserverPackage.Models
 {

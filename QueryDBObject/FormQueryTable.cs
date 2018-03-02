@@ -16,6 +16,7 @@ namespace QueryDBObject
     {
 
         #region fields
+        public int DataBaseID { get; set; }
         public Form LoginForm;
         /// <summary>
         /// 数据库连接字符串
@@ -74,15 +75,19 @@ namespace QueryDBObject
             };
             BindIgronesGrid();
 
-            
+
         }
         #endregion
 
         #region event handles
         private void btnQuery_Click(object sender, EventArgs e)
         {
-            var nameKeyWord = this.txtColumnNameKeyWord.Text.Trim();
-            this.objects = GetObjects(this.txtNameKeyWord.Text.Trim(), this.txtColumnNameKeyWord.Text.Trim());
+            var columnName = this.txtColumnNameKeyWord.Text.Trim();
+            var objectName = this.txtNameKeyWord.Text.Trim();
+            var sortField = (this.cboSort.SelectedValue ?? string.Empty).ToString();
+            var sortType = (this.cboSort.SelectedValue ?? string.Empty).ToString();
+            System.Collections.IDictionary dic = new Dictionary<string, object>();
+            this.objects = Common.DataService.GetTables(this.connectionString, objectName, columnName, this.igrones, sortField, sortType, out dic);
             BindObjectGrid();
 
         }
@@ -90,28 +95,6 @@ namespace QueryDBObject
         {
             //GetConnectInfo();
             ShowStipLabel();
-        }
-        private void FormQueryTable_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            var dialogResult = MessageBox.Show("是否返回重新连接服务器？\r\n是：重新连接，否：退出程序！", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (dialogResult == DialogResult.Yes)
-            {
-
-                if (this.LoginForm != null)
-                {
-                    this.LoginForm.Show();
-                }
-                else
-                {
-                    var lf = new LoginServer();
-                    lf.StartPosition = FormStartPosition.CenterScreen;
-                    lf.Show();
-                }
-            }
-            else
-            {
-                Application.Exit();
-            }
         }
         /// <summary>
         /// 在行标头中添加编号
@@ -139,7 +122,7 @@ namespace QueryDBObject
         {
             var dgv = sender as DataGridView;
             if (dgv == null) return;
-            if (dgv.Columns[e.ColumnIndex] == this.colModefiyDate 
+            if (dgv.Columns[e.ColumnIndex] == this.colModefiyDate
                 || dgv.Columns[e.ColumnIndex] == this.colCreateDate)
             {
                 var time = e.Value as Nullable<DateTime>;
@@ -162,12 +145,31 @@ namespace QueryDBObject
                 {
                     try
                     {
-                        var columns = GetColumns(obj.ObjectID);
-                        obj.Columns = columns;
+                        var columns = Common.DataService.GetColumns(this.connectionString, obj.ObjectID);
+                        var descriptions = Common.DataService.GetDescriptions(this.DataBaseID, obj.ObjectID);
+
+                        var cols = (from c in columns
+                                    join d in descriptions on c.ColumnID equals d.ColumnID into tmp_desc
+                                    from ds in tmp_desc.DefaultIfEmpty()
+                                    select new Models.DBColumn
+                                    {
+                                        ObjectID = c.ObjectID,
+                                        ColumnID = c.ColumnID,
+                                        Name = c.Name,
+                                        DataType = c.DataType,
+                                        MaxLength = c.MaxLength,
+                                        Identity = c.Identity,
+                                        IsPrimary = c.IsPrimary,
+                                        Default = c.Default,
+                                        Description = ds == null ? string.Empty : ds.Description
+
+                                    }).ToList();
+
+                        obj.Columns = cols;
                     }
                     catch (Exception ex)
                     {
-                        Common.ShowMessage(ex.Message, "Error");
+                        MessageHelper.ShowMessage(ex.Message, "Error");
                         Logger.Error(string.Format("查询对象{0}的列信息失败", obj.Name), ex);
                         return;
                     }
@@ -192,126 +194,6 @@ namespace QueryDBObject
         #endregion
 
         #region methods
-        /// <summary>
-        /// 为列表查询绑定数据方法
-        /// </summary>
-        /// <param name="keyWord"></param>
-        /// <param name="nameKeyWord"></param>
-        private List<Models.DBTable> GetObjects(string objectName, string columnName)
-        {
-            var sqlCommand = new StringBuilder("SELECT		DISTINCT SYS.OBJECTS.OBJECT_ID		AS ObjectID               " +
-                                                "            , sys.objects.name                 AS Name                   " +
-                                                "            , sys.objects.create_date          AS CreateDate             " +
-                                                "            , sys.objects.modify_date          AS ModifyDate             " +
-                                                "            , CASE sys.objects.type                                      " +
-                                                "                    WHEN 'U'    THEN 'Table'                             " +
-                                                "                    WHEN 'V'    THEN 'View'                              " +
-                                                "                    ELSE sys.objects.type                                " +
-                                                "                                                                         " +
-                                                "            END                                AS ObjectType             " +
-                                                "FROM        SYS.columns                                                  " +
-                                                "LEFT JOIN   SYS.objects ON sys.objects.object_id = sys.columns.object_id " +
-                                                "WHERE (TYPE = 'U' OR      TYPE = 'V') ");
-            //text LIKE '%' + @KeyWord + '%'
-            var paras = new List<SqlParameter>();
-            if (!string.IsNullOrEmpty(objectName))
-            {
-                sqlCommand.Append(" AND sys.objects.name LIKE @ObjectName");
-                paras.Add(new SqlParameter
-                {
-                    ParameterName = "@ObjectName",
-                    SqlDbType = SqlDbType.NVarChar,
-                    Value = "%" + objectName + "%"
-                });
-            }
-            if (!string.IsNullOrEmpty(columnName))
-            {
-                sqlCommand.Append(" AND sys.columns.name LIKE @ColumnName");
-                paras.Add(new SqlParameter
-                {
-                    ParameterName = "@ColumnName",
-                    SqlDbType = SqlDbType.NVarChar,
-                    Value = "%" + columnName + "%"
-                });
-            }
-            if (this.igrones != null && this.igrones.Any())
-            {
-                var igronKeyWords = this.igrones.Where(o => string.Equals(o.IgroneType, "KeyWord"))
-                                                .Select(o => o.Content)
-                                                .AsEnumerable();
-                if (igronKeyWords.Any())
-                {
-                    foreach (string kw in igronKeyWords)
-                    {
-                        var para = new SqlParameter
-                        {
-                            ParameterName = "@NotLike_" + kw,
-                            SqlDbType = SqlDbType.VarChar,
-                            Value = "%" + kw + "%"
-                        };
-                        sqlCommand.Append(" AND sys.objects.name NOT LIKE " + para.ParameterName);
-                        paras.Add(para);
-                    }
-                }
-                var names = this.igrones.Where(o => string.Equals(o.IgroneType, "Name"))
-                                        .Select(o => o.Content)
-                                        .AsEnumerable();
-                if (names.Any())
-                {
-                    var nameParas = new List<SqlParameter>();
-                    foreach (string name in names)
-                    {
-                        var para = new SqlParameter
-                        {
-                            ParameterName = "@NotEquals_" + name,
-                            SqlDbType = SqlDbType.VarChar,
-                            Value = name
-                        };
-                        nameParas.Add(para);
-                    }
-                    paras.AddRange(nameParas);
-                    sqlCommand.AppendFormat(" sys.objects.name NOT IN ({0})", string.Join(",", nameParas.Select(p => p.ParameterName).ToArray()));
-                }
-
-            }
-
-            var sort = string.Empty;
-
-            var item = this.cboSort.SelectedItem as dynamic;
-            if (item != null)
-            {
-                sort = item.Value;
-            }
-            if (!string.IsNullOrEmpty(sort))
-            {
-                item = this.cboSortType.SelectedItem as dynamic;
-                if (item != null)
-                {
-                    sort = " sys.objects." + sort + " " + item.Value;
-                }
-                sqlCommand.Append(" order by ");
-                sqlCommand.Append(sort);
-            }
-            
-            try
-            {
-                IDictionary dic = new Dictionary<object, object>();
-                var list = SqlHelper.ExecuteQuery<Models.DBTable>(this.connectionString, sqlCommand.ToString(), out dic, paras.ToArray());
-                this.rowCount = list.Count.ToString();
-
-                var et = (long)dic["ExecutionTime"];
-                ComputeTime(et);
-                this.rowCount = dic["SelectRows"].ToString();
-                ShowStipLabel();
-                return list;
-            }
-            catch (Exception ex)
-            {
-                Common.ShowMessage("查询失败：" + ex.Message, "Error");
-                Logger.Error("根据关键字查询存储过程事变", ex);
-            }
-            return new List<Models.DBTable>();
-        }
         /// <summary>
         /// 状态栏显示
         /// </summary>
@@ -386,60 +268,6 @@ namespace QueryDBObject
                 seconds = seconds % 60;
             }
             this.executeTime = hour.ToString().PadLeft(2, '0') + ":" + min.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0');
-        }
-        /// <summary>
-        /// 查询存储过程脚本
-        /// </summary>
-        /// <param name="prodecureName"></param>
-        /// <returns></returns>
-        private List<Models.DBColumn> GetColumns(int objectId)
-        {
-            var sqlCommand = "SELECT		obj.object_id                                                                                              " +
-                             "            , col.column_id AS ID                                                                                        " +
-                             "            ,col.[name]             AS[Name]                                                                             " +
-                             "            ,[type].name AS DataType                                                                                     " +
-                             "            ,col.max_length AS[MaxLength]                                                                                " +
-                             "            , col.is_nullable AS Nullable                                                                                " +
-                             "            ,CASE WHEN col.is_identity = 0 THEN NULL                                                                     " +
-                             "                  ELSE '('+ CONVERT(VARCHAR, [identity].seed_value)+','+CONVERT(VARCHAR, [identity].increment_value)+')' " +
-                             "            END AS[Identity]                                                                                             " +
-                             "            ,[index].is_primary_key AS IsPrimary                                                                         " +
-                             "            ,EP.[Description] " +
-                             "            ,[Default].[definition] AS [Default]                                                                                            " +
-                             "FROM        sys.objects AS obj                                                                                           " +
-                             "LEFT JOIN sys.columns             AS col          ON obj.[object_id] = col.[object_id]                                   " +
-                             "LEFT JOIN   sys.types AS [type]       ON col.user_type_id = [type].user_type_id                                          " +
-                             "LEFT JOIN   sys.identity_columns AS [identity]   ON col.column_id = [identity].column_id                                 " +
-                             "                                                 AND[identity].[object_id] = obj.[object_id]                             " +
-                             "LEFT JOIN   sys.index_columns AS index_column ON  obj.object_id = index_column.object_id                                 " +
-                             "                                        AND col.column_id = index_column.column_id                                       " +
-                             "LEFT JOIN   sys.indexes AS [index]      ON obj.object_id = [index].object_id                                             " +
-                             "                                        AND index_column.index_id = [index].index_id                                     " +
-                             "LEFT JOIN ( SELECT     major_id AS [OBJECT_ID]                                                                           " +
-                             "                     , minor_id AS [COLUMN_ID]                                                                           " +
-                             "                     , [value]  AS [Description]                                                                         " +
-                             "            FROM sys.extended_properties                                                                                 " +
-                             "            WHERE [name] = 'MS_Description') AS EP ON obj.object_id = EP.OBJECT_ID                                       " +
-                             "                                                   AND  col.column_id = EP.COLUMN_ID                                     " +
-                             "LEFT JOIN sys.sysconstraints AS Constraints ON	obj.object_id =  Constraints.id                                        " +
-                             "                                            AND   col.column_id = Constraints.colid                                      " +
-                             "LEFT JOIN   sys.default_constraints AS[Default] ON Constraints.constid = [Default].object_id                             " +
-                             "where obj.object_id = @ObjectID";
-            try
-            {
-                IDictionary dic = new Dictionary<object, object>();
-                var paraObjName = new SqlParameter
-                {
-                    ParameterName = "@ObjectID",
-                    SqlDbType = SqlDbType.VarChar,
-                    Value = objectId
-                };
-                return SqlHelper.ExecuteQuery(this.connectionString, sqlCommand, CommandType.Text, paraObjName).ToList<Models.DBColumn>();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("查询存储过程脚本错误", ex);
-            }
         }
 
         private void InitCobobox()
@@ -558,7 +386,7 @@ namespace QueryDBObject
         private void dgvColumnInfo_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             var dgv = sender as DataGridView;
-            if (dgv.Columns[e.ColumnIndex] == this.colColumnNullAble 
+            if (dgv.Columns[e.ColumnIndex] == this.colColumnNullAble
                 || dgv.Columns[e.ColumnIndex] == this.colColumnPrimary)
             {
                 var bl = e.Value as Nullable<bool>;
@@ -575,6 +403,26 @@ namespace QueryDBObject
                     }
                 }
                 e.Value = value;
+            }
+        }
+
+        private void dgvColumnInfo_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            var dgv = sender as DataGridView;
+            if (dgv == null) return;
+            var data = dgv.Rows[e.RowIndex].DataBoundItem as Models.DBColumn;
+            if (data == null) return;
+            //var item = data[e.RowIndex];
+            var tableId = data.ObjectID;
+            var columnId = data.ColumnID;
+            var content = dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string;
+            try
+            {
+                Common.DataService.SaveDescription(this.DataBaseID, tableId, columnId, content);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("保存备注失败", ex);
             }
         }
     }

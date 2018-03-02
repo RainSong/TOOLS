@@ -12,19 +12,23 @@ namespace MSSqlserverPackage
         {
             get
             {
-                if (string.IsNullOrEmpty(this.dbObject.ObjectType))
+                if (this.dbObject == null || string.IsNullOrEmpty(this.dbObject.TypeName))
                 {
                     return "UnKnow";
                 }
                 else
                 {
-                    if (this.dbObject.ObjectType.Trim().Equals("U"))
+                    if (this.dbObject.TypeName.Trim().Equals("U"))
                     {
                         return "TABLE";
                     }
-                    else if (this.dbObject.ObjectType.Trim().Equals("V"))
+                    else if (this.dbObject.TypeName.Trim().Equals("V"))
                     {
                         return "VIEW";
+                    }
+                    else if (this.dbObject.TypeName.Trim().Equals("P"))
+                    {
+                        return "PROCEDURE";
                     }
                     return "OTHER";
                 }

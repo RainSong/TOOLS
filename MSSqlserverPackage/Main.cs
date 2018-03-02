@@ -150,7 +150,7 @@ namespace MSSqlserverPackage
             var sql = "SELECT name,id,type FROM sysobjects WHERE type in ('u','v')";
             try
             {
-                return SqlHelper.GetTable(connectionString, sql);
+                return RainSong.Common.SqlHelper.GetTable(connectionString, sql);
             }
             catch
             {

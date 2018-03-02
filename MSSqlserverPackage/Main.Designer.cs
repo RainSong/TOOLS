@@ -55,9 +55,9 @@
             this.MenuItemFile,
             this.MenuItemExportDesign,
             this.MenuItemSeeting});
-            this.menuStrip1.Location = new System.Drawing.Point(20, 60);
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(668, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(1384, 25);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -102,13 +102,13 @@
             // MenuItemExportDesignToExcel
             // 
             this.MenuItemExportDesignToExcel.Name = "MenuItemExportDesignToExcel";
-            this.MenuItemExportDesignToExcel.Size = new System.Drawing.Size(152, 22);
+            this.MenuItemExportDesignToExcel.Size = new System.Drawing.Size(148, 22);
             this.MenuItemExportDesignToExcel.Text = "到Execel文件";
             // 
             // MenuItemExportDesignToSqlScript
             // 
             this.MenuItemExportDesignToSqlScript.Name = "MenuItemExportDesignToSqlScript";
-            this.MenuItemExportDesignToSqlScript.Size = new System.Drawing.Size(152, 22);
+            this.MenuItemExportDesignToSqlScript.Size = new System.Drawing.Size(148, 22);
             this.MenuItemExportDesignToSqlScript.Text = "到Script文件";
             // 
             // MenuItemSeeting
@@ -128,10 +128,10 @@
             // treeView1
             // 
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.treeView1.Location = new System.Drawing.Point(20, 85);
+            this.treeView1.Location = new System.Drawing.Point(0, 25);
             this.treeView1.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(180, 424);
+            this.treeView1.Size = new System.Drawing.Size(180, 504);
             this.treeView1.TabIndex = 1;
             this.treeView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseUp);
             // 
@@ -165,16 +165,17 @@
             // tabControl1
             // 
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(200, 85);
+            this.tabControl1.Location = new System.Drawing.Point(180, 25);
             this.tabControl1.Name = "tabControl1";
-            this.tabControl1.Size = new System.Drawing.Size(488, 424);
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(1204, 504);
             this.tabControl1.TabIndex = 2;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(708, 529);
+            this.ClientSize = new System.Drawing.Size(1384, 529);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.menuStrip1);

@@ -3,185 +3,58 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.Caching;
+using System.Text;
 
 namespace MSSqlserverPackage.Common
 {
     public class SqlHelper
     {
-        public static SqlConnection GetConnection(string connectionString = null)
+        private static string GetConnectionString()
         {
+            var connectionString = string.Empty;
             ObjectCache cache = MemoryCache.Default;
             if (connectionString == null)
                 connectionString = cache["ConnectionString"] as string;
-            return new SqlConnection(connectionString);
+            return connectionString;
         }
-        public static SqlConnection GetOpenConnection(string connectionString = null)
+        public static List<Parameter> GetParameters()
         {
-            var con = GetConnection(connectionString);
-            if (con.State != ConnectionState.Open)
-            {
-                try
-                {
-                    con.Open();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("打开数据库连接失败", ex);
-                }
-            }
-            return con;
+            var sqlCommantText = "SELECT  object_id ," +
+                            "        sys.parameters.name ," +
+                            "        sys.types.name AS [data_type]," +
+                            "        sys.parameters.max_length ," +
+                            "        is_output ," +
+                            "        has_default_value ," +
+                            "        default_value " +
+                            "FROM    sys.parameters" +
+                            "        LEFT JOIN sys.types ON sys.parameters.user_type_id = sys.types.user_type_id " +
+                            "WHERE LEN(sys.parameters.name) > 0";
+            return RainSong.Common.SqlHelper.GetList<Parameter>(sqlCommantText);
         }
-
-        public static DataTable GetTable(string sqlCommandText)
-        {
-            try
-            {
-                using (var con = GetOpenConnection())
-                {
-                    SqlCommand cmd = new SqlCommand(sqlCommandText, con);
-                    var adapter = new SqlDataAdapter(cmd);
-                    var dt = new DataTable();
-                    adapter.Fill(dt);
-                    return dt;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("数据查询失败", ex);
-            }
-        }
-
-        public static DataTable GetTable(string connectionString, string sqlCommandText, params SqlParameter[] parameters)
-        {
-            try
-            {
-                using (var con = GetOpenConnection(connectionString))
-                {
-                    SqlCommand cmd = new SqlCommand(sqlCommandText, con);
-                    if (parameters != null && parameters.Any())
-                        cmd.Parameters.AddRange(parameters);
-                    var adapter = new SqlDataAdapter(cmd);
-                    var dt = new DataTable();
-                    adapter.Fill(dt);
-                    return dt;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("数据查询失败", ex);
-            }
-        }
-        public static DataTable GetTable(SqlConnection conn, string sqlCommandText, params SqlParameter[] parameters)
-        {
-            try
-            {
-                SqlCommand cmd = new SqlCommand(sqlCommandText, conn);
-                if (parameters != null && parameters.Any())
-                    cmd.Parameters.AddRange(parameters);
-                var adapter = new SqlDataAdapter(cmd);
-                var dt = new DataTable();
-                adapter.Fill(dt);
-                return dt;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("数据查询失败", ex);
-            }
-        }
-        public static int ExecuteNonQuery(string sqlCommandText, params SqlParameter[] parameters)
-        {
-            using (var conn = GetOpenConnection())
-            {
-                var cmd = new SqlCommand(sqlCommandText, conn);
-                cmd.Parameters.AddRange(parameters);
-                return cmd.ExecuteNonQuery();
-            }
-        }
-        public static object ExecuteScalar(string sqlCommandText, params SqlParameter[] parameters)
-        {
-            using (var conn = GetOpenConnection())
-            {
-                var cmd = new SqlCommand(sqlCommandText, conn);
-                cmd.Parameters.AddRange(parameters);
-                return cmd.ExecuteScalar();
-                //return (T)Convert.ChangeType(result, typeof(T));
-            }
-        }
-        public static T ConverRowToEntity<T>(DataRow dr)
-        {
-            var entity = Activator.CreateInstance<T>();
-            var type = entity.GetType();
-            var properties = type.GetProperties();
-            foreach (PropertyInfo pi in properties)
-            {
-                var attrs = pi.GetCustomAttributes<FieldAttribute>();
-                if (attrs != null || attrs.Any())
-                {
-                    foreach (FieldAttribute fa in attrs)
-                    {
-                        if (dr.Table.Columns.Contains(fa.Field))
-                        {
-                            var value = dr[fa.Field];
-                            try
-                            {
-                                value = Convert.ChangeType(value, pi.PropertyType);
-                                pi.SetValue(entity, value);
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-
-                            }
-                        }
-                    }
-                }
-            }
-            return entity;
-        }
-        public static List<T> GetList<T>(DataTable dt)
-        {
-            var list = new List<T>();
-            foreach (DataRow dr in dt.Rows)
-            {
-                list.Add(ConverRowToEntity<T>(dr));
-            }
-            return list;
-        }
-
-        public static List<T> GetList<T>(string sqlCommandText)
-        {
-            var dt = GetTable(sqlCommandText);
-            return GetList<T>(dt); ;
-        }
-
         public static List<DBObject> GetObjects()
         {
             var sqlCommandText =
                 "SELECT  object_id ," +
                 "        parent_object_id ," +
                 "        name ," +
-                "        type ," +
+                "        RTRIM(LTRIM([type])) AS [type] ," +
                 "        type_desc ," +
                 "        create_date ," +
                 "        modify_date ," +
                 "        is_ms_shipped ," +
-                "        schema_id "+
+                "        schema_id " +
                 "FROM    sys.objects";
-            return GetList<DBObject>(sqlCommandText);
+            return RainSong.Common.SqlHelper.GetList<DBObject>(sqlCommandText);
         }
-
         public static List<Schema> GetSchemas()
         {
             var sqlCommandText =
                 "SELECT  name ," +
                 "        schema_id " +
                 "FROM    sys.schemas";
-            return GetList<Schema>(sqlCommandText);
+            return RainSong.Common.SqlHelper.GetList<Schema>(sqlCommandText);
         }
-
         public static List<Column> GetColumns()
         {
             var sqlCommandText = "SELECT  object_id ," +
@@ -192,10 +65,8 @@ namespace MSSqlserverPackage.Common
                                 "        sys.types.name AS data_type " +
                                 "FROM    sys.columns" +
                                 "        LEFT JOIN sys.types ON sys.columns.user_type_id = sys.types.user_type_id";
-            return GetList<Column>(sqlCommandText);
+            return RainSong.Common.SqlHelper.GetList<Column>(sqlCommandText);
         }
-
-
         public static IEnumerable<Identity> GetIdentities()
         {
             var sqlCommandText = "SELECT  object_id ," +
@@ -204,19 +75,17 @@ namespace MSSqlserverPackage.Common
                                 "        seed_value ," +
                                 "        increment_value " +
                                 "FROM    sys.identity_columns";
-            return GetList<Identity>(sqlCommandText);
+            return RainSong.Common.SqlHelper.GetList<Identity>(sqlCommandText);
         }
-
-        internal static IEnumerable<ExtendedProperty> GetExtendedProperties()
+        public static IEnumerable<ExtendedProperty> GetExtendedProperties()
         {
             var sqlCommandText = "SELECT  major_id ," +
                                 "        minor_id ," +
                                 "        name ," +
                                 "        value " +
                                 "FROM    sys.extended_properties";
-            return GetList<ExtendedProperty>(sqlCommandText);
+            return RainSong.Common.SqlHelper.GetList<ExtendedProperty>(sqlCommandText);
         }
-
         public static IEnumerable<PrimaryKey> GetPrimaryKeys()
         {
             var sqlCommandText = "SELECT  sys.objects.object_id AS [object_id] ," +
@@ -233,9 +102,8 @@ namespace MSSqlserverPackage.Common
                                 "        LEFT JOIN sys.columns ON sys.index_columns.object_id = sys.columns.object_id" +
                                 "                                 AND sys.index_columns.column_id = sys.columns.column_id " +
                                 "WHERE sys.key_constraints.type = 'pk'";
-            return GetList<PrimaryKey>(sqlCommandText);
+            return RainSong.Common.SqlHelper.GetList<PrimaryKey>(sqlCommandText);
         }
-
         public static List<ReferenceKey> GetReferenceKeys()
         {
             var sqlCommandText = "SELECT  sys.foreign_keys.name AS [key_name] ," +
@@ -254,11 +122,9 @@ namespace MSSqlserverPackage.Common
                                 "        LEFT JOIN sys.columns AS referenced_columns ON sys.foreign_key_columns.referenced_object_id = referenced_columns.object_id" +
                                 "                                                       AND sys.foreign_key_columns.referenced_column_id = referenced_columns.column_id" +
                                 "        LEFT JOIN sys.objects AS referenced_object ON sys.foreign_key_columns.referenced_object_id = referenced_object.object_id";
-            return GetList<ReferenceKey>(sqlCommandText);
+            return RainSong.Common.SqlHelper.GetList<ReferenceKey>(sqlCommandText);
         }
-
-
-        internal static IEnumerable<Index> GetIndexes()
+        public static IEnumerable<Index> GetIndexes()
         {
             var sqlCommandText = "SELECT  sys.indexes.object_id ," +
                                  "        sys.indexes.index_id ," +
@@ -268,7 +134,41 @@ namespace MSSqlserverPackage.Common
                                  "FROM    sys.indexes" +
                                  "        LEFT JOIN sys.index_columns ON sys.indexes.object_id = sys.index_columns.object_id" +
                                  "                                       AND sys.indexes.index_id = sys.index_columns.index_id";
-            return GetList<Index>(sqlCommandText);
+            return RainSong.Common.SqlHelper.GetList<Index>(sqlCommandText);
+        }
+
+        public static string ExecuteSqlHelpText(string objectName)
+        {
+            var procedureName = "sp_helptext";
+            var para = new SqlParameter
+            {
+                ParameterName = "@objname",
+                Value = objectName
+            };
+            var stringBuild = new StringBuilder();
+            using (var conn = RainSong.Common.SqlHelper.GetConnection(GetConnectionString()))
+            {
+                var cmd = new SqlCommand
+                {
+                    CommandText = procedureName,
+                    Connection = conn,
+                    CommandType = CommandType.StoredProcedure
+                };
+                var reader = cmd.ExecuteReader();
+                var sb = new StringBuilder();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        var value = reader.GetString(0);
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            sb.AppendLine(value);
+                        }
+                    }
+                }
+                return string.Empty;
+            }
         }
     }
 }
